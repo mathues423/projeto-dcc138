@@ -23,4 +23,24 @@
     </canvas>
 </body>
 <script src="Scripts/stilo.js"></script>
+<script src="Scripts/Personagem/Principal.js"></script>
+<!-- Regras das fases -->
+
+<!--  -->
+<script src="Scripts/Game/Jogo.js"></script>
+
+<script>
+    var principal = new Principal();
+    //controle perçonagem
+    canvas.addEventListener("mousemove", function (e) {
+        principal.mouse((e.clientX -10),(e.clientY -10),principal);
+    });
+
+    document.addEventListener("keydown", function (key) {
+        principal.entrada(key.keyCode,principal);
+    });
+    document.addEventListener("keyup", function (key) {
+        principal.saida(key.keyCode,principal);
+    });
+</script>
 </html>
