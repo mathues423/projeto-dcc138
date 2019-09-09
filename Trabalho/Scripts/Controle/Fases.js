@@ -88,7 +88,7 @@ Fase.prototype.insere = function(id,quantidade){
     for (let i = 0; i < quantidade; i++) {
         switch (id) {
             case 0:
-                var I0 = new Inimigo({nome: "Green Slime"});
+                var I0 = new Inimigo({nome: "Green Slime", sprite: "Imgs/sprites/GreenSlime.png",});
                 this.inimigos.push(I0);
                 break;
         
