@@ -98,7 +98,7 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
 Inimigo.prototype.mover = function (dt,can){
     if (this.tempParadoAux > 0) { // Animação Idle
         this.tempParadoAux -= dt;
-        let ang = Math.random()*360;
+        let ang = Math.round(Math.random()*360);
 
         this.angulo = ang;
         return;
@@ -106,8 +106,8 @@ Inimigo.prototype.mover = function (dt,can){
     if (this.tempAndandoAux > 0) { // Animação Walking
         this.tempAndandoAux -= dt;
 
-        this.vx = this.vm * Math.sin(this.angulo);
-        this.vy = this.vm * Math.cos(this.angulo);
+        this.vx = this.vm * Math.sin(this.angulo*Math.PI/180);
+        this.vy = this.vm * Math.cos(this.angulo*Math.PI/180);
 
         if ((this.x + this.vx * dt + this.w) < can.width && (this.x + this.vx * dt) >= 0) {
             this.x = this.x + this.vx * dt;
@@ -144,10 +144,7 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
 
     if (this.tempSpriteAux < 0) {
         this.tempSpriteAux = this.tempSprite;
-        this.passo++;
-    }
-    if (this.passo > 7) {
-        this.passo = 0;
+        this.passo = (this.passo+1)%8;
     }
 
     // Leste inverter imagem #Erro
@@ -176,10 +173,7 @@ Inimigo.prototype.animacaoIdle = function(ctx,dt,img){
     let nort = 235,west = 1;
     if (this.tempSpriteAux < 0) {
         this.tempSpriteAux = this.tempSprite;
-        this.passo++;
-    }
-    if (this.passo > 3) {
-        this.passo = 0;
+        this.passo= (this.passo+1)%4;
     }
 
     // Leste inverter imagem #Erro
