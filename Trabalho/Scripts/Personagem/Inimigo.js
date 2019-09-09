@@ -17,22 +17,24 @@ function Inimigo(args = {}) {
 
         //Caracteristicas
         nome:"???",
-        
-        hpMax: b,
-        hp: b,
+        hpMax: args.hpMax,
+        hp: args.hpMax,
         atkMin:1,
         atkMax:3,
         xp:0,
         lvl:1,
         morto: false,
         agressivo: false,
-        conportamento: undefined,
+        comportamento: undefined,
 
         //Controles do Sprite
         sprite: undefined,
         norte: false,
-        leste: false,
-        
+        leste: true,
+        passo: 0,
+        tempSprite : 0.15,
+        tempSpriteAux : 0.15,
+
         //#Erro melhorar
         x: can.width / 3 + Math.random() * (2 / 3 * can.width - 40),
         y: can.height / 10 + Math.random() * (9 / 10 * can.height - 85),
@@ -77,12 +79,15 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
         ctx.fillStyle = "red";
         ctx.fillRect(this.x,this.y,this.w,this.h);
     }else{
-        if (this.tempAndandoAux > 0) {
-            this.animacaoWalking(ctx,dt);
-        }else if (this.tempParadoAux > 0) {
-            this.animacaoIdle(ctx,dt);
+        var img = new Image();
+        img.src = this.sprite;
+        if (this.tempParadoAux > 0) {
+            this.animacaoIdle(ctx,dt,img);
+        }else if (this.tempAndandoAux > 0) {
+            this.animacaoWalking(ctx,dt,img);
         }
     }
+    ctx.strokeRect(this.x,this.y, this.w,this.h);
 };
 
 /** Função que é responsável por mover o inimigo.
@@ -93,19 +98,8 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
 Inimigo.prototype.mover = function (dt,can){
     if (this.tempParadoAux > 0) { // Animação Idle
         this.tempParadoAux -= dt;
-        let ang = Math.random()*Math.PI*2;
+        let ang = Math.random()*360;
 
-        if( Math.sin(ang) >= 0){ //Nort
-            this.norte = true;
-        }else{
-            this.norte = false;
-        }
-
-        if (Math.cos(ang) >= 0){// Leste
-            this.leste = true;
-        }else{
-            this.leste = false;
-        }
         this.angulo = ang;
         return;
     } 
@@ -132,16 +126,72 @@ Inimigo.prototype.mover = function (dt,can){
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
+ * @param {Image} img -> imagem do inimigo.
  */
-Principal.prototype.animacaoWalking = function(ctx,dt){
+Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
+    this.tempSpriteAux -= dt;
+    let nort = 60,west = 1;
+    if( Math.sin(this.angulo*Math.PI/180) >= 0){ //Nort
+        this.norte = true;
+    }else{
+        this.norte = false;
+    }
+    if (Math.cos(this.angulo*Math.PI/180) >= 0){// Leste
+        this.leste = true;
+    }else{
+        this.leste = false;
+    }
 
+    if (this.tempSpriteAux < 0) {
+        this.tempSpriteAux = this.tempSprite;
+        this.passo++;
+    }
+    if (this.passo > 7) {
+        this.passo = 0;
+    }
+
+    // Leste inverter imagem #Erro
+    // if (this.leste) {
+    //     ctx.scale(-1,1);
+    //     west = -1;
+    // }else{
+    //     ctx.scale(1,1);
+    // }
+
+    if (this.norte) {
+        ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+    }else{
+        ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+    }
 };
 
 /** Função que é responsável por fazer a animação do inimigo quando ele ficar parado.
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
+ * @param {Image} img -> tempo do quadro em ms.
  */
-Principal.prototype.animacaoIdle = function(ctx,dt){
+Inimigo.prototype.animacaoIdle = function(ctx,dt,img){
+    this.tempSpriteAux -= dt;
+    let nort = 235,west = 1;
+    if (this.tempSpriteAux < 0) {
+        this.tempSpriteAux = this.tempSprite;
+        this.passo++;
+    }
+    if (this.passo > 3) {
+        this.passo = 0;
+    }
 
+    // Leste inverter imagem #Erro
+    // if (this.leste) {
+    //     ctx.scale(-1,1);
+    //     west = -1;
+    // }else{
+    //     ctx.scale(1,1);
+    // }
+    if (this.norte) {
+        ctx.drawImage(img, 60 * this.passo + nort, 0, 60, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+    }else{
+        ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+    }
 };
