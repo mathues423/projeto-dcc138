@@ -21,7 +21,6 @@ Fase.prototype.constructor = Fase;
  */
 Fase.prototype.print = function (ctx, dt) {
     if (this.verifica(ctx, dt)) {
-        
         this.Principal.inf(ctx, dt);
     } else {
         this.flagPonto = true;
@@ -50,6 +49,7 @@ Fase.prototype.verifica = function (ctx, dt) {
         }
         return true;
     }
+    return true;
 };
 
 /** Função que desenha o ponto onde o jogador deve chegar.
@@ -68,16 +68,29 @@ Fase.prototype.draw = function (ctx, dt) {
 
     ctx.fillStyle = this.ponto.cor;
     ctx.fillRect(
-        this.ponto.x + (this.ponto.w / 2 - this.ponto.w / 10 * this.animation), this.ponto.y + (this.ponto.h / 2 - this.ponto.h / 10 * this.animation),
-        this.ponto.w * this.animation / 5, this.ponto.h * this.animation / 5);
+    this.ponto.x + (this.ponto.w / 2 - this.ponto.w / 10 * this.animation), 
+    this.ponto.y + (this.ponto.h / 2 - this.ponto.h / 10 * this.animation),
+
+    this.ponto.w * this.animation / 5, this.ponto.h * this.animation / 5);
 };
 
 /** Função que verifica se o jogador limpou e chegou no ponto para passar de fase
  * 
  * @param {Number} id -> Id dos mostros a serem inceridos.
- * {}
+ * 0 -> Green Slime; 
+ * 
  * @param {Number} quantidade -> tempo do quadro em ms.
  */
 Fase.prototype.insere = function(id,quantidade){
-
+    for (let i = 0; i < quantidade; i++) {
+        switch (id) {
+            case 0:
+                let A = new Inimigo();
+                this.inimigos.push(A);
+                break;
+        
+            default:
+                break;
+        }
+    }
 };
