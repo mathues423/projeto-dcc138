@@ -11,7 +11,6 @@ function Principal(args = {}) {
         vy: 0,
         vm: 100,
 
-
         //Caracteristicas
         nome:"???",
         hp: 100,
@@ -106,8 +105,8 @@ function setClick(e,Obj){
  */
 Principal.prototype.inf = function (ctx,dt) {
     var can = document.querySelector("canvas");
-    this.desenhaPersonagem(ctx,dt,can);
-    this.mover(dt);
+    this.desenhaPersonagem(ctx,dt);
+    this.mover(dt,can);
     this.desenhaBarra(ctx,dt,can);
 };
 
@@ -115,7 +114,7 @@ Principal.prototype.inf = function (ctx,dt) {
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
- * @param {CanvasCompositing} can -> canvas.
+ * @param {HTMLCanvasElement} can -> canvas.
  */
 Principal.prototype.desenhaBarra = function(ctx,dt,can){
     this.mpsAux -= dt;
@@ -145,7 +144,7 @@ Principal.prototype.desenhaBarra = function(ctx,dt,can){
         }
 
         if (this.hp <= 0) {
-            this.morto;
+            this.morto = true;
         }
         
     }else{//Morto
@@ -188,26 +187,25 @@ Principal.prototype.porc = function (cima, baixo) {
     return cima / baixo;
 };
 
-/** Função que é responsavel por desenhar o personagem.
+/** Função que é responsável por desenhar o personagem.
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
- * @param {CanvasCompositing} can -> canvas.
  */
-Principal.prototype.desenhaPersonagem = function (ctx,dt,can){
-    //Teste sem sprite{
-    ctx.fillStyle = "blue";
-    ctx.fillRect(this.x,this.y,this.w,this.h);
-    //}
+Principal.prototype.desenhaPersonagem = function (ctx,dt){
+    if (this.sprite == undefined) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(this.x,this.y,this.w,this.h);
+    }
 };
 
-/** Função que é responsavel por mover o personagem.
+/** Função que é responsável por mover o personagem.
  * 
  * @param {Number} dt -> tempo do quadro em ms.
+ * @param {HTMLCanvasElement} can -> canvas.
+ * 
  */
-Principal.prototype.mover = function(dt){
-    let can = document.querySelector("canvas");
-
+Principal.prototype.mover = function(dt,can){
     if (this.andar[0]!=null) {
         this.vx = this.vm*Math.sign(this.andar[0].marcaX - (this.x+ Math.round(this.w/2)));
         this.vy = this.vm*Math.sign(this.andar[0].marcaY - (this.y+this.h));
@@ -229,7 +227,6 @@ Principal.prototype.mover = function(dt){
 
         if (this.x == this.andar[0].marcaX && this.y == this.andar[0].maracY) {
             this.andar[0] = null;
-            this.a = 0;
         }
     }
 

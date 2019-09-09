@@ -21,6 +21,9 @@ Fase.prototype.constructor = Fase;
  */
 Fase.prototype.print = function (ctx, dt) {
     if (this.verifica(ctx, dt)) {
+        for (let i = 0; this.inimigos[0]!=null && i < this.inimigos.length; i++) {
+            this.inimigos[i].inf(ctx,dt);
+        }
         this.Principal.inf(ctx, dt);
     } else {
         this.flagPonto = true;
@@ -85,8 +88,8 @@ Fase.prototype.insere = function(id,quantidade){
     for (let i = 0; i < quantidade; i++) {
         switch (id) {
             case 0:
-                let A = new Inimigo();
-                this.inimigos.push(A);
+                var I0 = new Inimigo({nome: "Green Slime"});
+                this.inimigos.push(I0);
                 break;
         
             default:
