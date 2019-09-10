@@ -35,7 +35,11 @@ function Principal(args = {}) {
         leste: false,
         x: 10,
         y: can.height/2-30,
-
+        parado: true,
+        passo: 0,
+        tempSprite : 0.15,
+        tempSpriteAux : 0.15,
+        
         //Controles de tempo
         hprec: 2,
         hps:4,
@@ -109,6 +113,110 @@ Principal.prototype.inf = function (ctx,dt) {
     this.mover(dt,can);
     this.desenhaBarra(ctx,dt,can);
 };
+
+/** Função que é responsável por desenhar o personagem.
+ * 
+ * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
+ * @param {Number} dt -> tempo do quadro em ms.
+ */
+Principal.prototype.desenhaPersonagem = function (ctx,dt){
+    if (this.sprite == undefined) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(this.x,this.y,this.w,this.h);
+    }else{
+        var img = new Image();
+        img.src = this.sprite;
+        ctx.save();
+        if (this.parado) {
+            this.animacaoIdle(ctx,dt,img);
+        }else{
+            this.animacaoWalking(ctx,dt,img);
+        }
+        ctx.restore();
+    }
+};
+
+/** Função que é responsável por fazer a animação do perçonagem principal quando ele ficar parado.
+ * 
+ * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
+ * @param {Number} dt -> tempo do quadro em ms.
+ * @param {Image} img -> imagem do perçonagem principal.
+ */
+Principal.prototype.animacaoIdle = function(ctx,dt,img){
+    this.tempSpriteAux -= dt;
+    let nort = 320,west = 1;
+    if (this.tempSpriteAux < 0) {
+        this.tempSpriteAux = this.tempSprite;
+        this.passo = (this.passo+1)%4;
+    }
+
+    var can = document.querySelector("canvas");
+    if (this.leste) {
+        ctx.scale(-1,1);
+        west = -1;
+    }else{
+        ctx.scale(1,1);
+    }
+    
+    if (this.norte) {
+        // ctx.drawImage(img, 60 * this.passo + nort, 0, 60, 60, (this.x)*west, this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 80 * this.passo+ nort, 0, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 80 * this.passo+ nort, 0, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }else{
+        // ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x)*west, this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 80 * this.passo, 0, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 80 * this.passo, 0, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }
+    if (west == -1) {
+        ctx.translate(-can.width,can.height);
+    }
+};
+
+/** Função que é responsável por fazer a animação do perçonagem principal quando ele andar.
+ * 
+ * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
+ * @param {Number} dt -> tempo do quadro em ms.
+ * @param {Image} img -> imagem do perçonagem principal.
+ */
+Principal.prototype.animacaoWalking = function(ctx,dt,img){
+    this.tempSpriteAux -= dt;
+    let nort = 100,west = 1;
+
+    if (this.tempSpriteAux < 0) {
+        this.tempSpriteAux = this.tempSprite;
+        this.passo = (this.passo+1)%8;
+    }
+
+    if (this.leste) {
+        ctx.scale(-1,1);
+        west = -1;
+    }else{
+        ctx.scale(1,1);
+    }
+
+    if (this.norte) {
+        // ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 80 * this.passo, 60 + nort, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 80 * this.passo, 60 + nort, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }else{
+        // ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 80 * this.passo, 80, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 80 * this.passo, 80, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }
+};
+
 
 /** Função que exibe a barra de vida, controla o hps e mps e verifica se o personagem está vivo.
  * 
@@ -187,18 +295,6 @@ Principal.prototype.porc = function (cima, baixo) {
     return cima / baixo;
 };
 
-/** Função que é responsável por desenhar o personagem.
- * 
- * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
- * @param {Number} dt -> tempo do quadro em ms.
- */
-Principal.prototype.desenhaPersonagem = function (ctx,dt){
-    if (this.sprite == undefined) {
-        ctx.fillStyle = "blue";
-        ctx.fillRect(this.x,this.y,this.w,this.h);
-    }
-};
-
 /** Função que é responsável por mover o personagem.
  * 
  * @param {Number} dt -> tempo do quadro em ms.
@@ -207,14 +303,15 @@ Principal.prototype.desenhaPersonagem = function (ctx,dt){
  */
 Principal.prototype.mover = function(dt,can){
     if (this.andar[0]!=null) {
+        this.parado = false;
         this.vx = this.vm*Math.sign(this.andar[0].marcaX - (this.x+ Math.round(this.w/2)));
         this.vy = this.vm*Math.sign(this.andar[0].marcaY - (this.y+this.h));
 
-        if ((this.x + this.vx * dt + Math.round(this.w/2)) == this.andar[0].marcaX) {
+        if ((this.x + Math.round(this.w/2)) >= this.andar[0].marcaX -1 && (this.x + Math.round(this.w/2)) <= this.andar[0].marcaX +1) {
             this.vx = 0;
         }
 
-        if ((this.y + this.vy * dt + this.h) == this.andar[0].marcaY) {
+        if ((this.y + (this.h)) >= this.andar[0].marcaY -1 && (this.y + (this.h)) <= this.andar[0].marcaY +1) {
             this.vy = 0;
         }
 
@@ -225,9 +322,25 @@ Principal.prototype.mover = function(dt,can){
             this.y = this.y + this.vy * dt;
         }
 
-        if (this.x == this.andar[0].marcaX && this.y == this.andar[0].maracY) {
+        if (((this.x + Math.round(this.w/2)) >= this.andar[0].marcaX -1 && (this.x + Math.round(this.w/2)) <= this.andar[0].marcaX +1) 
+        && ((this.y + (this.h)) >= this.andar[0].marcaY -1 && (this.y + (this.h)) <= this.andar[0].marcaY +1)) {
             this.andar[0] = null;
         }
+        if (this.vy>0) { // Norte
+            this.norte = false;
+        } else if(this.vx == 0){
+        }else{
+            this.norte = true;
+        }
+
+        if (this.vx > 0) { // Leste
+            this.leste = true;
+        } else if(this.vy == 0){
+        }else{
+            this.leste = false;
+        }
+    }else{
+        this.parado = true;
     }
 
 };
