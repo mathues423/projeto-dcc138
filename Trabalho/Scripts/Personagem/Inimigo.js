@@ -30,7 +30,7 @@ function Inimigo(args = {}) {
         //Controles do Sprite
         sprite: undefined,
         norte: false,
-        leste: true,
+        leste: false,
         passo: 0,
         tempSprite : 0.15,
         tempSpriteAux : 0.15,
@@ -81,11 +81,13 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
     }else{
         var img = new Image();
         img.src = this.sprite;
+        ctx.save();
         if (this.tempParadoAux > 0) {
             this.animacaoIdle(ctx,dt,img);
         }else if (this.tempAndandoAux > 0) {
             this.animacaoWalking(ctx,dt,img);
         }
+        ctx.restore();
     }
     ctx.strokeRect(this.x,this.y, this.w,this.h);
 };
@@ -148,17 +150,27 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
     }
 
     // Leste inverter imagem #Erro
-    // if (this.leste) {
-    //     ctx.scale(-1,1);
-    //     west = -1;
-    // }else{
-    //     ctx.scale(1,1);
-    // }
+    if (this.leste) {
+        ctx.scale(-1,1);
+        west = -1;
+    }else{
+        ctx.scale(1,1);
+    }
 
     if (this.norte) {
-        ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+        // ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
     }else{
-        ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+        // ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
     }
 };
 
@@ -177,15 +189,30 @@ Inimigo.prototype.animacaoIdle = function(ctx,dt,img){
     }
 
     // Leste inverter imagem #Erro
-    // if (this.leste) {
-    //     ctx.scale(-1,1);
-    //     west = -1;
-    // }else{
-    //     ctx.scale(1,1);
-    // }
-    if (this.norte) {
-        ctx.drawImage(img, 60 * this.passo + nort, 0, 60, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+    var can = document.querySelector("canvas");
+    if (this.leste) {
+        ctx.scale(-1,1);
+        west = -1;
     }else{
-        ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x-4)*west, this.y-7, this.w*1.3, this.h*1.3);
+        ctx.scale(1,1);
+    }
+    
+    if (this.norte) {
+        // ctx.drawImage(img, 60 * this.passo + nort, 0, 60, 60, (this.x)*west, this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 60 * this.passo+ nort, 0, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 60 * this.passo+ nort, 0, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }else{
+        // ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x)*west, this.y-7, this.w*1.3, this.h*1.3);
+        if (west == -1) {
+            ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
+        } else {
+            ctx.drawImage(img, 60 * this.passo, 0, 60, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
+        }
+    }
+    if (west == -1) {
+        ctx.translate(-can.width,can.height);
     }
 };
