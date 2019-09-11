@@ -47,8 +47,9 @@ function Inimigo(args = {}) {
         tempParado: aux+3,
         tempParadoAux: aux+3,
 
-        //Controle de movimentação
-        
+        //Controle de combate
+        marcado: false,
+        itsLife: true,
     };
 
     Object.assign(this,inimigo,args);
@@ -64,8 +65,61 @@ Inimigo.prototype.constructor = Inimigo;
  */
 Inimigo.prototype.inf = function(ctx,dt){
     var can = document.querySelector("canvas");
+    this.desenhaHpNome(ctx);
     this.desenhaPersonagem(ctx,dt);
     this.mover(dt,can);
+};
+
+/** Função responsavel por desenhar a vida caso tiver perdido ou o nome.
+ * 
+ * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
+ */
+Inimigo.prototype.desenhaHpNome = function (ctx) {
+    var tammax = 50;
+    if (this.hp == this.hpMax) {
+        ctx.fillStyle = "white";
+        let vet = this.nome.split("");
+        let auxiliarX = 0, auxtamanho = vet.length;
+        ctx.font = "12px monospace";
+        if (auxtamanho * 7 > this.w) {
+            while (true) {
+                if (auxtamanho - 3 > 0) {
+                    if ((auxtamanho - 3) % 3 == 2)
+                        auxiliarX = auxiliarX - 7;
+
+                    auxtamanho = auxtamanho - 3;
+                } else {
+                    break;
+                }
+            }
+        }
+        for (let i = 0; i < vet.length; i++) {
+            ctx.fillText(vet[i], this.x + auxiliarX + (i * 7), this.y + 12 + this.h);
+        }
+    } else if (this.itsLife) {///Controle do hp parecido com o nome(vetor) ###Falta###
+
+        ctx.fillStyle = 'hsl('+ 120*this.porc(this.hp, this.hpMax) +',100%,50%)';
+        ctx.fillRect(this.x - tammax / 2 + this.w / 2, this.y + this.h + 10, tammax * this.porc(this.hp, this.hpMax), 6);
+        // ctx.fillRect(this.x - tammax / 2 + this.w / 2, this.y + this.h + 10, tammax * this.porc(this.hp, this.hpMax), 6);
+
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x - tammax / 2 + this.w / 2, this.y + this.h + 10, tammax, 6);
+
+        ctx.fillStyle = "white";
+        ctx.font = "10px sans-serif";
+        ctx.fillText(this.hp + " / " + this.hpMax, this.x, this.y + this.h + 30, tammax);
+    }
+};
+
+/** Função que divide o "cima" por "baixo".
+ * 
+ * @param {Number} cima -> numero que é o dividendo.
+ * @param {Number} baixo -> numero que é o divisor.
+ * @returns {Number} cima / baixo
+ */
+Inimigo.prototype.porc = function (hpAtual, hpTotal) {
+    return hpAtual / hpTotal;
 };
 
 /** Função que é responsável por desenhar o inimigo.
@@ -74,6 +128,9 @@ Inimigo.prototype.inf = function(ctx,dt){
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
+    if (this.marcado) {
+        this.foco(ctx);
+    }
     if (this.sprite == undefined) {
         ctx.fillStyle = "red";
         ctx.fillRect(this.x,this.y,this.w,this.h);
@@ -213,4 +270,9 @@ Inimigo.prototype.mover = function (dt,can){
 
     this.tempAndandoAux = this.tempAndando;
     this.tempParadoAux = this.tempParado;
+};
+
+Inimigo.prototype.foco = function (ctx){
+    ctx.fillStyle = "white";
+    ctx.fillRect(this.x + this.w/2 - 2, this.y - 2, 4,4);
 };

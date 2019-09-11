@@ -26,7 +26,8 @@ Fase.prototype.print = function (ctx, dt) {
         var can = document.querySelector("canvas");
         this.Principal.x = 10;
         this.Principal.y = can.height/2-30;
-        this.Principal.andar[0] = null;
+        this.Principal.marcaX = -1;
+        this.Principal.marcaY = -1;
         this.Principal.inimigos = this.inimigos;
         this.spaw = true;
     }
