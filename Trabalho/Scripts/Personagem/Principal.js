@@ -6,7 +6,8 @@ function Principal(args = {}) {
         h: 30,
 
         //Movimento
-        andar: [],
+        marcaX: -1,
+        marcaY: -1,
         vx: 0,
         vy: 0,
         vm: 100,
@@ -48,10 +49,18 @@ function Principal(args = {}) {
         mps:3,
         mpsAux:3,
 
-        //Controle de movimentação
-
         //Controle Usuario
         click: setClick(undefined,undefined),
+
+        //Controle de combate
+        inimigos: [],
+        index: -1,
+        rangeFisico: 30,
+        atkps: 1/1,
+        atkpsAux: 1/1,
+        // marcaX: -1,
+        // marcaY: -1,
+
     };
 
     Object.assign(this,principal,args);
@@ -93,11 +102,9 @@ canvas.addEventListener("mousedown", function (e) {
 function setClick(e,Obj){
     return function (e,Obj){
         if(e.button == 0){
-            let andarAux = {
-                marcaX: e.clientX -10,
-                marcaY: e.clientY -10,
-            };
-            Obj.andar[0]=andarAux;
+            Obj.marcaX = e.clientX -10;
+            Obj.marcaY = e.clientY -10;
+            Obj.verifica(e.clientX -10,e.clientY -10);
         }
     }
 }
@@ -127,6 +134,19 @@ Principal.prototype.desenhaPersonagem = function (ctx,dt){
         var img = new Image();
         img.src = this.sprite;
         ctx.save();
+        if (this.vy>0) { // Norte
+            this.norte = false;
+        } else if(this.vx == 0){
+        }else{
+            this.norte = true;
+        }
+
+        if (this.vx > 0) { // Leste
+            this.leste = true;
+        } else if(this.vy == 0){
+        }else{
+            this.leste = false;
+        }
         if (this.parado) {
             this.animacaoIdle(ctx,dt,img);
         }else{
@@ -299,48 +319,100 @@ Principal.prototype.porc = function (cima, baixo) {
  * 
  * @param {Number} dt -> tempo do quadro em ms.
  * @param {HTMLCanvasElement} can -> canvas.
- * 
  */
 Principal.prototype.mover = function(dt,can){
-    if (this.andar[0]!=null) {
+    if (this.index != -1 ||  this.marcaX != -1 && this.marcaY != -1) {
         this.parado = false;
-        this.vx = this.vm*Math.sign(this.andar[0].marcaX - (this.x+ Math.round(this.w/2)));
-        this.vy = this.vm*Math.sign(this.andar[0].marcaY - (this.y+this.h));
+        if (this.index != -1) {
+            this.marcaX = -1;
+            this.marcaY = -1;
+            this.inimigos[this.index].marcado = true;
+            this.vx = this.vm*Math.sign(- this.x - this.w/2 + (this.inimigos[this.index].x + this.inimigos[this.index].w/2));
+            this.vy = this.vm*Math.sign(- this.y - this.h/2 + (this.inimigos[this.index].y + this.inimigos[this.index].h));
 
-        if ((this.x + Math.round(this.w/2)) >= this.andar[0].marcaX -1 && (this.x + Math.round(this.w/2)) <= this.andar[0].marcaX +1) {
-            this.vx = 0;
-        }
+            if ((this.x + this.rangeFisico) <= this.inimigos[this.index].x + this.inimigos[this.index].w && (this.x + this.rangeFisico) >= this.inimigos[this.index].x) {
+                this.vx = 0;
+            }
 
-        if ((this.y + (this.h)) >= this.andar[0].marcaY -1 && (this.y + (this.h)) <= this.andar[0].marcaY +1) {
-            this.vy = 0;
-        }
+            if ((this.y + this.rangeFisico) <= this.inimigos[this.index].y + this.inimigos[this.index].h && (this.y + this.rangeFisico) >= this.inimigos[this.index].y) {
+                this.vy = 0;
+            }
 
-        if ((this.x + this.vx * dt + Math.round(this.w/2)) < can.width && (this.x + this.vx * dt) >= 0) {
-            this.x = this.x + this.vx * dt;
-        }
-        if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
-            this.y = this.y + this.vy * dt;
-        }
+            if (((this.x) >= 0 && (this.x + Math.round(this.w)) <= can.width) 
+            && ((this.y) >= 0 && (this.y + (this.h)) <= can.height)) {
+                this.x = this.x + this.vx * dt;
+                this.y = this.y + this.vy * dt;
+            }else{
+                // Saiu da borda
+            }
 
-        if (((this.x + Math.round(this.w/2)) >= this.andar[0].marcaX -1 && (this.x + Math.round(this.w/2)) <= this.andar[0].marcaX +1) 
-        && ((this.y + (this.h)) >= this.andar[0].marcaY -1 && (this.y + (this.h)) <= this.andar[0].marcaY +1)) {
-            this.andar[0] = null;
-        }
-        if (this.vy>0) { // Norte
-            this.norte = false;
-        } else if(this.vx == 0){
+            if (!this.vx && !this.vy) {
+                this.atkpsAux -= dt;
+                if (this.atkpsAux <= 0) {
+                    this.atkpsAux = this.atkps;
+                    this.inimigos[this.index].dano(this.atkMin,this.atkMax);
+                }
+            }else{
+                this.atkpsAux = this.atkps;
+            }
         }else{
-            this.norte = true;
-        }
-
-        if (this.vx > 0) { // Leste
-            this.leste = true;
-        } else if(this.vy == 0){
-        }else{
-            this.leste = false;
+            this.vx = this.vm*Math.sign(this.marcaX - (this.x+ Math.round(this.w/2)));
+            this.vy = this.vm*Math.sign(this.marcaY - (this.y+this.h));
+    
+            if ((this.x + Math.round(this.w/2)) >= this.marcaX -1 && (this.x + Math.round(this.w/2)) <= this.marcaX +1) {
+                this.vx = 0;
+            }
+    
+            if ((this.y + (this.h)) >= this.marcaY -1 && (this.y + (this.h)) <= this.marcaY +1) {
+                this.vy = 0;
+            }
+    
+            if ((this.x + this.vx * dt + Math.round(this.w/2)) < can.width && (this.x + this.vx * dt) >= 0) {
+                this.x = this.x + this.vx * dt;
+            }
+            if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
+                this.y = this.y + this.vy * dt;
+            }
+    
+            if (((this.x + Math.round(this.w/2)) >= this.marcaX -1 && (this.x + Math.round(this.w/2)) <= this.marcaX +1) 
+            && ((this.y + (this.h)) >= this.marcaY -1 && (this.y + (this.h)) <= this.marcaY +1)) {
+                this.marcaX = -1;
+                this.marcaY = -1;
+            }
         }
     }else{
         this.parado = true;
     }
 
+};
+
+/** Função para verificar e marcar o inimigo caso o usuário queira atacar-lo.
+ * 
+ * *Lembre-se de pegar mudar a referencia para o inicio do canvas.
+ * @param {Number} marcaX ->Posição do mouse, no eixo X.
+ * @param {Number} marcaY ->Posição do mouse, no eixo Y.
+ * @returns {Boolean} ->True caso há um inimigo na posição do click do mouse.
+ * @returns {Number} ->O index do inimigo focado, -1 caso não esteja focando um inimigo. 
+ */
+Principal.prototype.verifica = function(marcaX,marcaY){
+    let mx = false,my = false;
+    for (let i = 0; i < this.inimigos.length; i++) {
+        this.inimigos[i].marcado = false;
+    }
+    for (let i = 0; i < this.inimigos.length; i++) {
+        if (marcaX >= this.inimigos[i].x && marcaX <= this.inimigos[i].x + this.inimigos[i].w) {
+            mx = true;
+        }
+    
+        if (marcaY >= this.inimigos[i].y &&  marcaY <= this.inimigos[i].y + this.inimigos[i].h) {
+            my = true;
+        }
+
+        if (mx && my) {
+            this.index = i;
+            return true;
+        }
+    }
+    this.index = -1;
+    return false;
 };
