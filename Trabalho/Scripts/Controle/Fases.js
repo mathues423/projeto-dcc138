@@ -6,7 +6,9 @@ function Fase(params = {}) {
         limpa: false,
         ponto: { x: can.width - 40, y: can.height / 2 - 25, w: 25, h: 25, cor: "green" },
         flagPonto: false,
+        flagCompleta: false,
         animation: 5,
+        spaw: false,
     };
 
     Object.assign(this, fase, params);
@@ -20,24 +22,37 @@ Fase.prototype.constructor = Fase;
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Fase.prototype.print = function (ctx, dt) {
-    if (this.verifica(ctx, dt)) {
-        for (let i = 0; this.inimigos[0]!=null && i < this.inimigos.length; i++) {
-            this.inimigos[i].inf(ctx,dt);
-        }
-        this.Principal.inf(ctx, dt);
-    } else {
-        this.flagPonto = true;
+    if (!this.spaw) { // Spaw
+        var can = document.querySelector("canvas");
+        this.Principal.x = 10;
+        this.Principal.y = can.height/2-30;
+        this.Principal.andar[0] = null;
+        this.Principal.inimigos = this.inimigos;
+        this.spaw = true;
     }
+    this.verifica(ctx, dt);
+    for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
+        this.inimigos[i].inf(ctx,dt);
+        this.morto(i);
+    }
+    this.Principal.inf(ctx, dt);
+
+    if (this.flagPonto && this.limpa) {
+        this.flagCompleta = true;
+    }
+    
 };
 
 /** Função que verifica se o jogador limpou e chegou no ponto para passar de fase.
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
- * @returns {Boolean} -> True se tiver passado de fase, False caso não.
  */
 Fase.prototype.verifica = function (ctx, dt) {
-    if (this.inimigos[0] == null) {
+    if (!this.limpa && this.inimigos[0] == null || this.inimigos[0] == undefined) {
+        this.limpa = true;
+    }
+    if (this.limpa) {
         this.draw(ctx, dt);
         let flagX = false, flagY = false;
         if ((this.Principal.x + Math.round(this.Principal.w / 2)) > this.ponto.x && (this.Principal.x + Math.round(this.Principal.w / 2)) < this.ponto.x + this.ponto.w) {
@@ -48,11 +63,9 @@ Fase.prototype.verifica = function (ctx, dt) {
         }
 
         if (flagX && flagY) {
-            return false;
+            this.flagPonto = true;
         }
-        return true;
     }
-    return true;
 };
 
 /** Função que desenha o ponto onde o jogador deve chegar.
@@ -96,4 +109,15 @@ Fase.prototype.insere = function(id,quantidade){
                 break;
         }
     }
+};
+
+
+Fase.prototype.morto = function(index){
+    if (this.inimigos[index] != null || this.inimigos[index] != undefined) {
+        if (this.inimigos[index].morto) {
+            this.inimigos.splice(index,1);
+            return true;
+        }
+    }
+    return false;
 };
