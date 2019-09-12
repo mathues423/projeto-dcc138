@@ -33,7 +33,7 @@ Fase.prototype.print = function (ctx, dt) {
     }
     this.verifica(ctx, dt);
     for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
-        this.inimigos[i].inf(ctx,dt);
+        this.inimigos[i].inf(ctx,dt,this.Principal);
         this.morto(i);
     }
     this.Principal.inf(ctx, dt);

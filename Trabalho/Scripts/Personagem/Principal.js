@@ -58,6 +58,9 @@ function Principal(args = {}) {
         rangeFisico: 30,
         atkps: 1/1,
         atkpsAux: 1/1,
+        danoVet: [],
+        doge: 10,
+        tempdano: 1,
         // marcaX: -1,
         // marcaY: -1,
 
@@ -127,6 +130,23 @@ Principal.prototype.inf = function (ctx,dt) {
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Principal.prototype.desenhaPersonagem = function (ctx,dt){
+    for (let i = 0; i < this.danoVet.length; i++) {
+        ctx.globalAlpha = this.danoVet[i].alf;
+        ctx.fillStyle = "white";
+        if (this.danoVet[i].dano == "Doge") {
+            ctx.font = "12px sans-serif";
+        } else {
+            ctx.font = "15px sans-serif";
+        }
+        ctx.fillText(this.danoVet[i].dano, this.danoVet[i].x, this.danoVet[i].y);
+        this.danoVet[i].y -= 1;
+        this.danoVet[i].alf = this.danoVet[i].alf - 0.01;
+        this.danoVet[i].temporestante = this.danoVet[i].temporestante - dt;
+        if (this.danoVet[i].temporestante < 0) {
+            this.danoVet.splice(i, 1);
+        }
+    }
+    ctx.globalAlpha = 1;
     if (this.sprite == undefined) {
         ctx.fillStyle = "blue";
         ctx.fillRect(this.x,this.y,this.w,this.h);
@@ -327,8 +347,8 @@ Principal.prototype.mover = function(dt,can){
             this.marcaX = -1;
             this.marcaY = -1;
             this.inimigos[this.index].marcado = true;
-            this.vx = this.vm*Math.sign(- this.x - this.w/2 + (this.inimigos[this.index].x + this.inimigos[this.index].w/2));
-            this.vy = this.vm*Math.sign(- this.y - this.h/2 + (this.inimigos[this.index].y + this.inimigos[this.index].h));
+            this.vx = this.vm*Math.sign(- this.x - this.w + (this.inimigos[this.index].x + this.inimigos[this.index].w));
+            this.vy = this.vm*Math.sign(- this.y - this.h + (this.inimigos[this.index].y + this.inimigos[this.index].h));
 
             if ((this.x + this.rangeFisico) <= this.inimigos[this.index].x + this.inimigos[this.index].w && (this.x + this.rangeFisico) >= this.inimigos[this.index].x) {
                 this.vx = 0;
@@ -415,4 +435,28 @@ Principal.prototype.verifica = function(marcaX,marcaY){
     }
     this.index = -1;
     return false;
+};
+
+/** Função que é responsavel por ver o dano sofrido pelo inimigo. 
+ * 
+ * @param {Number} atkMin ->o ataque minimo do personagem inimigo.
+ * @param {Number} atkMax ->o ataque máximo do personagem inimigo.
+ */
+Principal.prototype.dano = function(atkMin,atkMax){
+    if (this.hp > 0) {
+        if (Math.random()*100 > this.doge) {
+            let damage = Math.round(Math.random()*(atkMax-atkMin)+atkMin);
+            this.hp -= damage;
+            
+            let i = {dano: damage, temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
+            this.danoVet.push(i);
+            if (this.hp <= 0)
+                this.morto = true;
+        }else{
+            let d = {dano: "Doge", temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
+            this.danoVet.push(d);
+        }
+    }else{
+        this.morto = true;
+    }
 };
