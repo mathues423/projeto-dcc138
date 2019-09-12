@@ -4,6 +4,9 @@ function Inimigo(args = {}) {
     if (args.hpMax == undefined) {
         args.hpMax = 50;
     }
+    if (args.hpstemp == undefined) {
+        args.hpstemp = 2;
+    }
     var inimigo = {
         //Tamanho
         w: 30, 
@@ -50,6 +53,16 @@ function Inimigo(args = {}) {
         //Controle de combate
         marcado: false,
         itsLife: true,
+        danoVet: [],
+        doge: 10,
+        tempdano: 0.8,
+        agressivo: false,
+        hpstempaux: args.hpstemp,
+        hpstemp: args.hpstemp,
+        hps: 1,
+        rangeFisico: 100,
+        atkpsAux: 2,
+        atkps: 2,
     };
 
     Object.assign(this,inimigo,args);
@@ -62,12 +75,13 @@ Inimigo.prototype.constructor = Inimigo;
  * 
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
+ * @param {Principal} principal -> principal.
  */
-Inimigo.prototype.inf = function(ctx,dt){
+Inimigo.prototype.inf = function(ctx,dt,principal){
     var can = document.querySelector("canvas");
     this.desenhaHpNome(ctx);
     this.desenhaPersonagem(ctx,dt);
-    this.mover(dt,can);
+    this.mover(dt,can,principal);
 };
 
 /** Função responsavel por desenhar a vida caso tiver perdido ou o nome.
@@ -97,7 +111,7 @@ Inimigo.prototype.desenhaHpNome = function (ctx) {
             ctx.fillText(vet[i], this.x + auxiliarX + (i * 7), this.y + 12 + this.h);
         }
     } else if (this.itsLife) {///Controle do hp parecido com o nome(vetor) ###Falta###
-
+        this.agressivo = true;
         ctx.fillStyle = 'hsl('+ 120*this.porc(this.hp, this.hpMax) +',100%,50%)';
         ctx.fillRect(this.x - tammax / 2 + this.w / 2, this.y + this.h + 10, tammax * this.porc(this.hp, this.hpMax), 6);
         // ctx.fillRect(this.x - tammax / 2 + this.w / 2, this.y + this.h + 10, tammax * this.porc(this.hp, this.hpMax), 6);
@@ -109,6 +123,21 @@ Inimigo.prototype.desenhaHpNome = function (ctx) {
         ctx.fillStyle = "white";
         ctx.font = "10px sans-serif";
         ctx.fillText(this.hp + " / " + this.hpMax, this.x, this.y + this.h + 30, tammax);
+
+        if (this.itsLife && this.hp > this.hpMax) {
+            this.hp = this.hpMax;
+        }
+        if (this.itsLife && this.hp < this.hpMax) {
+            this.hpstempaux = this.hpstempaux - dt;
+            if (this.hpstempaux < 0) {
+                if (this.hp + this.hps < this.hpMax)
+                    this.hp = this.hp + this.hps;
+                else
+                    this.hp = this.hpMax;
+    
+                this.hpstempaux = this.hpstemp;
+            }
+        }
     }
 };
 
@@ -131,10 +160,40 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
     if (this.marcado) {
         this.foco(ctx);
     }
+    for (let i = 0; i < this.danoVet.length; i++) {
+        ctx.globalAlpha = this.danoVet[i].alf;
+        ctx.fillStyle = "white";
+        if (this.danoVet[i].dano == "Doge") {
+            ctx.font = "12px sans-serif";
+        } else {
+            ctx.font = "15px sans-serif";
+        }
+        ctx.fillText(this.danoVet[i].dano, this.danoVet[i].x, this.danoVet[i].y);
+        this.danoVet[i].y -= 1;
+        this.danoVet[i].alf = this.danoVet[i].alf - 0.01;
+        this.danoVet[i].temporestante = this.danoVet[i].temporestante - dt;
+        if (this.danoVet[i].temporestante < 0) {
+            this.danoVet.splice(i, 1);
+        }
+    }
+    ctx.globalAlpha = 1;
     if (this.sprite == undefined) {
         ctx.fillStyle = "red";
         ctx.fillRect(this.x,this.y,this.w,this.h);
     }else{
+        if (this.vy>0) { // Norte
+            this.norte = false;
+        } else if(this.vx == 0){
+        }else{
+            this.norte = true;
+        }
+    
+        if (this.vx > 0) { // Leste
+            this.leste = true;
+        } else if(this.vy == 0){
+        }else{
+            this.leste = false;
+        }
         var img = new Image();
         img.src = this.sprite;
         ctx.save();
@@ -199,20 +258,7 @@ Inimigo.prototype.animacaoIdle = function(ctx,dt,img){
 Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
     this.tempSpriteAux -= dt;
     let nort = 60,west = 1;
-    if (this.vy>0) { // Norte
-        this.norte = false;
-    } else if(this.vx == 0){
-    }else{
-        this.norte = true;
-    }
-
-    if (this.vx > 0) { // Leste
-        this.leste = true;
-    } else if(this.vy == 0){
-    }else{
-        this.leste = false;
-    }
-
+    
     if (this.tempSpriteAux < 0) {
         this.tempSpriteAux = this.tempSprite;
         this.passo = (this.passo+1)%8;
@@ -226,14 +272,12 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
     }
 
     if (this.norte) {
-        // ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
         if (west == -1) {
             ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
         } else {
             ctx.drawImage(img, 52.5 * this.passo, 60 + nort, 52.5, 60, (this.x)*west-4, this.y-7, this.w*1.3, this.h*1.3);
         }
     }else{
-        // ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x-4), this.y-7, this.w*1.3, this.h*1.3);
         if (west == -1) {
             ctx.drawImage(img, 55 * this.passo, 60, 55, 60, (this.x)*west-4-this.w, this.y-7, this.w*1.3, this.h*1.3);
         } else {
@@ -246,33 +290,95 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
  * 
  * @param {Number} dt -> temdo do quadro em ms.
  * @param {HTMLCanvasElement} can -> canvas.
+ * @param {Principal} principal -> principal.
  */
-Inimigo.prototype.mover = function (dt,can){
-    if (this.tempParadoAux > 0) { // Animação Idle
-        this.tempParadoAux -= dt;
-        this.angulo = Math.random()*(360);
-        return;
-    } 
-    if (this.tempAndandoAux > 0) { // Animação Walking
-        this.tempAndandoAux -= dt;
+Inimigo.prototype.mover = function (dt,can,principal){
+    principal.x;
+    if (this.agressivo) {
+        this.vx = this.vm*Math.sign(- this.x - this.w + (principal.x + principal.w));
+        this.vy = this.vm*Math.sign(- this.y - this.h + (principal.y + principal.h));
 
-        this.vx = this.vm * Math.sin(this.angulo * Math.PI/180);
-        this.vy = this.vm * Math.cos(this.angulo * Math.PI/180);
+        if ((this.x + this.rangeFisico) < principal.x + principal.w +1 && (this.x + this.rangeFisico) > principal.x +1) {
+            this.vx = 0;
+        }
 
-        if ((this.x + this.vx * dt + this.w) < can.width && (this.x + this.vx * dt) >= 0) {
+        if ((this.y + this.rangeFisico) < principal.y + principal.h +1 && (this.y + this.rangeFisico) > principal.y +1) {
+            this.vy = 0;
+        }
+
+        if ((this.x >= 0 && (this.x + this.w) <= can.width) 
+        && (this.y >= 0 && (this.y + this.h) <= can.height)) {
             this.x = this.x + this.vx * dt;
-        }
-        if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
             this.y = this.y + this.vy * dt;
+        }else{
+            // Saiu da borda
         }
-        return;
-    }
 
-    this.tempAndandoAux = this.tempAndando;
-    this.tempParadoAux = this.tempParado;
+        if (!this.vx && !this.vy) {
+            this.atkpsAux -= dt;
+            if (this.atkpsAux <= 0) {
+                this.atkpsAux = this.atkps;
+                principal.dano(this.atkMin,this.atkMax);
+            }
+        }else{
+            this.atkpsAux = this.atkps;
+        }
+    }else{
+        if (this.tempParadoAux > 0) { // Animação Idle
+            this.tempParadoAux -= dt;
+            this.angulo = Math.random()*(360);
+            return;
+        } 
+        if (this.tempAndandoAux > 0) { // Animação Walking
+            this.tempAndandoAux -= dt;
+            
+            this.vx = this.vm * Math.sin(this.angulo * Math.PI/180);
+            this.vy = this.vm * Math.cos(this.angulo * Math.PI/180);
+            
+            if ((this.x + this.vx * dt + this.w) < can.width && (this.x + this.vx * dt) >= 0) {
+                this.x = this.x + this.vx * dt;
+            }
+            if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
+                this.y = this.y + this.vy * dt;
+            }
+            return;
+        }
+        
+        this.tempAndandoAux = this.tempAndando;
+        this.tempParadoAux = this.tempParado;
+    }
 };
 
+/** Função que é responsavel por desenhar um quadrado branco no inimigo que está  sendo focado.
+ * 
+ * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
+ */
 Inimigo.prototype.foco = function (ctx){
     ctx.fillStyle = "white";
     ctx.fillRect(this.x + this.w/2 - 2, this.y - 2, 4,4);
+};
+
+/** Função que é responsavel por ver o dano sofrido pelo inimigo. 
+ * 
+ * @param {Number} atkMin ->o ataque minimo do personagem inimigo.
+ * @param {Number} atkMax ->o ataque máximo do personagem inimigo.
+ */
+Inimigo.prototype.dano = function(atkMin,atkMax){
+    if (this.hp > 0) {
+        if (Math.random()*100 > this.doge) {
+            let damage = Math.round(Math.random()*(atkMax-atkMin)+atkMin);
+            this.hp -= damage;
+            
+            let i = {dano: damage, temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
+            this.agressivo = true;
+            this.danoVet.push(i);
+            if (this.hp <= 0)
+                this.itsLife = false;
+        }else{
+            let d = {dano: "Doge", temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
+            this.danoVet.push(d);
+        }
+    }else{
+        this.itsLife = false;
+    }
 };
