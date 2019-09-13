@@ -112,11 +112,16 @@ Fase.prototype.insere = function(id,quantidade){
     }
 };
 
-
+/** Função que verifica se o inimigo esta morto e o remove da fase.
+ * 
+ * @param {Number} index -> posição do inimigo no vetor.
+ * @returns True se tiver morto, false caso não.
+ */
 Fase.prototype.morto = function(index){
     if (this.inimigos[index] != null || this.inimigos[index] != undefined) {
-        if (this.inimigos[index].morto) {
+        if (!this.inimigos[index].itsLife) {
             this.inimigos.splice(index,1);
+            this.Principal.index = -1;    
             return true;
         }
     }

@@ -5,7 +5,7 @@ function Inimigo(args = {}) {
         args.hpMax = 50;
     }
     if (args.hpstemp == undefined) {
-        args.hpstemp = 2;
+        args.hpstemp = 3.5;
     }
     var inimigo = {
         //Tamanho
@@ -42,9 +42,8 @@ function Inimigo(args = {}) {
         y: can.height / 10 + Math.random() * (9 / 10 * can.height - 85),
 
         //Controles de tempo
-        hprec: 2,
-        hps:4,
-        hpsAux:4,
+        hpstempaux: args.hpstemp,
+        hpstemp: args.hpstemp,
         tempAndando: aux,
         tempAndandoAux: aux,
         tempParado: aux+3,
@@ -57,12 +56,10 @@ function Inimigo(args = {}) {
         doge: 10,
         tempdano: 0.8,
         agressivo: false,
-        hpstempaux: args.hpstemp,
-        hpstemp: args.hpstemp,
         hps: 1,
-        rangeFisico: 100,
-        atkpsAux: 2,
-        atkps: 2,
+        rangeFisico: 30,
+        atkpsAux: 1,
+        atkps: 1,
     };
 
     Object.assign(this,inimigo,args);
@@ -293,16 +290,18 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
  * @param {Principal} principal -> principal.
  */
 Inimigo.prototype.mover = function (dt,can,principal){
-    principal.x;
     if (this.agressivo) {
-        this.vx = this.vm*Math.sign(- this.x - this.w + (principal.x + principal.w));
-        this.vy = this.vm*Math.sign(- this.y - this.h + (principal.y + principal.h));
+        console.log(principal);
 
-        if ((this.x + this.rangeFisico) < principal.x + principal.w +1 && (this.x + this.rangeFisico) > principal.x +1) {
+        if (Math.sign(principal.x - this.x)*(principal.x - this.x) > this.rangeFisico) {
+            this.vx = this.vm*Math.sign(principal.x - this.x);
+        }else{
             this.vx = 0;
         }
-
-        if ((this.y + this.rangeFisico) < principal.y + principal.h +1 && (this.y + this.rangeFisico) > principal.y +1) {
+        
+        if (Math.sign(principal.y - this.y)*(principal.y - this.y) > this.rangeFisico) {
+            this.vy = this.vm*Math.sign(principal.y - this.y );
+        }else{
             this.vy = 0;
         }
 
