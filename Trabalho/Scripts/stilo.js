@@ -3,6 +3,7 @@ var context = canvas.getContext("2d");
 context.save();
 canvas.width = 1340;
 canvas.height = 550;
+
 /** Função que é responsável por limpar a tela.
  * 
  */

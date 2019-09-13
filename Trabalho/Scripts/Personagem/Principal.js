@@ -42,7 +42,7 @@ function Principal(args = {}) {
         tempSpriteAux : 0.15,
         
         //Controles de tempo
-        hprec: 2,
+        hprec: 1,
         hps:4,
         hpsAux:4,
         mprec: 1,
@@ -55,7 +55,7 @@ function Principal(args = {}) {
         //Controle de combate
         inimigos: [],
         index: -1,
-        rangeFisico: 30,
+        rangeFisico: 35,
         atkps: 1/1,
         atkpsAux: 1/1,
         danoVet: [],
@@ -347,14 +347,16 @@ Principal.prototype.mover = function(dt,can){
             this.marcaX = -1;
             this.marcaY = -1;
             this.inimigos[this.index].marcado = true;
-            this.vx = this.vm*Math.sign(- this.x - this.w + (this.inimigos[this.index].x + this.inimigos[this.index].w));
-            this.vy = this.vm*Math.sign(- this.y - this.h + (this.inimigos[this.index].y + this.inimigos[this.index].h));
-
-            if ((this.x + this.rangeFisico) <= this.inimigos[this.index].x + this.inimigos[this.index].w && (this.x + this.rangeFisico) >= this.inimigos[this.index].x) {
+            
+            if (Math.sign(this.inimigos[this.index].x - this.x)*(this.inimigos[this.index].x - this.x) > this.rangeFisico) {
+                this.vx = this.vm*Math.sign(this.inimigos[this.index].x - this.x);
+            }else{
                 this.vx = 0;
             }
-
-            if ((this.y + this.rangeFisico) <= this.inimigos[this.index].y + this.inimigos[this.index].h && (this.y + this.rangeFisico) >= this.inimigos[this.index].y) {
+            
+            if (Math.sign(this.inimigos[this.index].y - this.y)*(this.inimigos[this.index].y - this.y) > this.rangeFisico) {
+                this.vy = this.vm*Math.sign(this.inimigos[this.index].y - this.y );
+            }else{
                 this.vy = 0;
             }
 
