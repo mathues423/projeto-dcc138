@@ -50,7 +50,7 @@ function Principal(args = {}) {
         mpsAux:3,
 
         //Controle Usuario
-        click: setClick(undefined,undefined),
+        click: setClick(),
 
         //Controle de combate
         inimigos: [],
@@ -61,6 +61,15 @@ function Principal(args = {}) {
         danoVet: [],
         doge: 10,
         tempdano: 1,
+        setKeys: setKey(),
+        skils: false,
+        teclado: {
+            q: false,
+            w: false,
+            e: false,
+            r: false,
+        },
+        resetKeys: resetKey(),
         // marcaX: -1,
         // marcaY: -1,
 
@@ -73,7 +82,7 @@ Principal.prototype = new Principal();
 Principal.prototype.constructor = Principal;
 
 
-//Controle Do personagem
+// Captura do mouse em movimento
 canvas.addEventListener("mousemove", function (e) {
     principal.mouse((e.clientX -10),(e.clientY -10),principal);
 });
@@ -92,6 +101,7 @@ function setMouse(mouseX,mouseY,Obj) {
     }
 }
 
+// Captura do click do mouse
 canvas.addEventListener("mousedown", function (e) {
     principal.click(e,principal);
 });
@@ -111,6 +121,102 @@ function setClick(e,Obj){
         }
     }
 }
+
+document.addEventListener("keydown", function (e) {
+    principal.setKeys(e.keyCode,principal,true);
+});
+
+document.addEventListener("keyup", function (e) {
+    principal.setKeys(e.keyCode,principal,false);
+});
+
+/** Função que controla o click nas teclas do teclado.
+ * 
+ * @param {Number} keyCode -> Evento do click.
+ * @param {Principal} Obj -> Personagem principal.
+ * @param {Boolean} precionada -> True se for precionando a tecla.
+ * @returns {Function}
+ */
+function setKey(keyCode,Obj,precionada) {
+    return function (keyCode,Obj,precionada) {
+        if (precionada) {
+            if (!Obj.skils) {
+                switch (keyCode) {
+                    case 81: //Q
+                       Obj.teclado.q = true;
+                    break;
+                    case 87: //W
+                        Obj.teclado.w = true;
+                        break;
+                    case 69: //E
+                        Obj.teclado.e = true;
+                    break;
+                    case 82: //R
+                        Obj.teclado.r = true;
+                    break;
+                    
+                    default:
+                        console.log("???");
+                    break;
+                }
+                Obj.resetKey(keyCode);
+                Obj.skils = true;
+            }
+        } else {
+            switch (keyCode) {
+                case 81: //Q
+                    Obj.teclado.q = false;
+                break;
+                case 87: //W
+                    Obj.teclado.w = false;
+                    break;
+                case 69: //E
+                    Obj.teclado.e = false;
+                break;
+                case 82: //R
+                    Obj.teclado.r = false;
+                break;
+                
+                default:
+                    console.log("??? UP");
+                break;
+            }
+            Obj.skils = false;
+        }
+        
+    }
+};
+
+function resetKey(keyCode) {
+    return function (keyCode) {
+        switch (keyCode) {
+            case 81: //Q
+               Obj.teclado.w = false;
+               Obj.teclado.e = false;
+               Obj.teclado.r = false;
+            break;
+            case 87: //W
+                Obj.teclado.q = false;
+                Obj.teclado.e = false;
+                Obj.teclado.r = false;
+                break;
+            case 69: //E
+                Obj.teclado.q = false;
+                Obj.teclado.w = false;
+                Obj.teclado.r = false;
+            break;
+            case 82: //R
+                Obj.teclado.q = false;
+                Obj.teclado.w = false;
+                Obj.teclado.e = false;
+            break;
+            
+            default:
+                console.log("???");
+            break;
+        }
+    }
+};
 
 /** Função que exibe o personagem dando prioridade para ele mesmo, depois sua movimentação e por fim sua barra de vida.
  * 
