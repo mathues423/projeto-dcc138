@@ -291,8 +291,6 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
  */
 Inimigo.prototype.mover = function (dt,can,principal){
     if (this.agressivo) {
-        console.log(principal);
-
         if (Math.sign(principal.x - this.x)*(principal.x - this.x) > this.rangeFisico) {
             this.vx = this.vm*Math.sign(principal.x - this.x);
         }else{
@@ -375,6 +373,32 @@ Inimigo.prototype.dano = function(atkMin,atkMax){
                 this.itsLife = false;
         }else{
             let d = {dano: "Doge", temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
+            this.danoVet.push(d);
+        }
+    }else{
+        this.itsLife = false;
+    }
+};
+
+/** Função que é responsavel por ver o dano sofrido pelo inimigo. 
+ * 
+ * @param {Number} atkMin ->o ataque minimo do personagem inimigo.
+ * @param {Number} atkMax ->o ataque máximo do personagem inimigo.
+ * @param {Number} auxX ->um auxiliar para diferenciar uma skill.
+ */
+Inimigo.prototype.danoSkill = function(atkMin,atkMax, auxX, auxY){
+    if (this.hp > 0) {
+        if (Math.random()*100 > this.doge) {
+            let damage = Math.round(Math.random()*(atkMax-atkMin)+atkMin);
+            this.hp -= damage;
+            
+            let i = {dano: damage, temporestante: this.tempdano, x: this.x + this.w + 4 + auxX, y: this.y + this.h / 2+ auxY, alf: 1 }
+            this.agressivo = true;
+            this.danoVet.push(i);
+            if (this.hp <= 0)
+                this.itsLife = false;
+        }else{
+            let d = {dano: "Doge", temporestante: this.tempdano, x: this.x + this.w + 4 +auxX, y: this.y + this.h / 2 +auxY, alf: 1 }
             this.danoVet.push(d);
         }
     }else{
