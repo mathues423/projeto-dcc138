@@ -201,7 +201,7 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
         }
         ctx.restore();
     }
-    ctx.strokeRect(this.x,this.y, this.w,this.h);
+    // ctx.strokeRect(this.x,this.y, this.w,this.h);
 };
 
 /** Função que é responsável por fazer a animação do inimigo quando ele ficar parado.

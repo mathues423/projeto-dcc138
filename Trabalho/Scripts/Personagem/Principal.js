@@ -78,6 +78,12 @@ function Principal(args = {}) {
         // marcaX: -1,
         // marcaY: -1,
 
+        ponto: {
+            x: 10,
+            y: 10,
+            animacao: 1, 
+        },
+
     };
 
     Object.assign(this, principal, args);
@@ -123,6 +129,7 @@ function setClick(e, Obj) {
             Obj.marcaX = e.clientX - 10;
             Obj.marcaY = e.clientY - 10;
             Obj.verifica(e.clientX - 10, e.clientY - 10);
+            Obj.ponto.animacao = 1;
         }
     }
 }
@@ -505,6 +512,7 @@ Principal.prototype.mover = function (dt, can) {
                 }
             }
         } else {
+            this.desenhaPonto(can,dt);
             this.vx = this.vm * Math.sign(this.marcaX - (this.x + Math.round(this.w / 2)));
             this.vy = this.vm * Math.sign(this.marcaY - (this.y + this.h));
 
@@ -658,4 +666,22 @@ Principal.prototype.desenhaBarraSkils = function (ctx, dt, can) {
         ctx.fillText("R", 5 * can.width / 7 + 150, can.height - 50 + 25);
         ctx.globalAlpha = 1;
     }
+};
+
+/**
+ * 
+ * @param {HTMLCanvasElement} can
+ * @param {Number} dt
+ */
+Principal.prototype.desenhaPonto = function (can,dt) {
+    var ctx = can.getContext("2d");
+    this.ponto.animacao -= dt;
+    if ( this.ponto.animacao < 0) {
+        this.ponto.animacao = 1;
+    }
+    ctx.fillRect(
+        this.marcaX + (this.ponto.x / 2 - this.ponto.x / 4 * this.ponto.animacao), 
+        this.marcaY + (this.ponto.y / 2 - this.ponto.y / 4 * this.ponto.animacao),
+    
+        this.ponto.x * this.ponto.animacao / 2, this.ponto.y * this.ponto.animacao / 2);
 };
