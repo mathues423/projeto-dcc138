@@ -13,7 +13,7 @@ function Principal(args = {}) {
         vm: 100,
 
         //Caracteristicas
-        nome: "???",
+        nome: "Ted Phill",
         hp: 100,
         hpMax: 100,
         mp: 20,
@@ -444,8 +444,8 @@ Principal.prototype.desenhaBarra = function (ctx, dt, can) {
 
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
-    ctx.fillText("Hp: " + this.hp + " / " + this.hpMax + "    |     Nome:" + this.nome, tammax + 2, can.height - 16 * 2 + 16 / 2, tammax);
-    ctx.fillText("Mp: " + this.mp + " / " + this.mpMax + "    |     Lvl:" + this.lvl, tammax / 2 + 2, can.height - 16 / 2, tammax);
+    ctx.fillText("Hp: " + this.hp + " / " + this.hpMax + "    |     Nome: " + this.nome, tammax + 2, can.height - 16 * 2 + 16 / 2, tammax);
+    ctx.fillText("Mp: " + this.mp + " / " + this.mpMax + "    |     xp(Lvl): " + this.xp, tammax / 2 + 2, can.height - 16 / 2, tammax);
 
     ctx.lineWidth = 1;
 };

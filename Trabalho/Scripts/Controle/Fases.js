@@ -120,6 +120,7 @@ Fase.prototype.insere = function(id,quantidade){
 Fase.prototype.morto = function(index){
     if (this.inimigos[index] != null || this.inimigos[index] != undefined) {
         if (!this.inimigos[index].itsLife) {
+            this.Principal.xp += this.inimigos[index].xp;
             this.inimigos.splice(index,1);
             this.Principal.index = -1;    
             return true;
