@@ -15,6 +15,9 @@ function frames(t) {
         }
         if (Game[i].flagCompleta) {
             i++;
+            if (Game[i] != null) {
+                Game[i].Principal = principal;
+            }
         }else{
             Game[i].print(context,dt);
         }

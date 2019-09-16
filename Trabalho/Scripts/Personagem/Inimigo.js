@@ -24,9 +24,8 @@ function Inimigo(args = {}) {
         hp: args.hpMax,
         atkMin:1,
         atkMax:3,
-        xp:0,
+        xp:10,
         lvl:1,
-        morto: false,
         agressivo: false,
         comportamento: undefined,
 
