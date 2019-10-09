@@ -1,0 +1,1 @@
+// Funções genericas e para mortar um level.

@@ -1,0 +1,1 @@
+// Controle da exibição do personagem principal e do level(conjunto de mapas).

@@ -1,0 +1,1 @@
+// Controla os conjuntos de mapas e suas posiçoes juntamente com os movimentos dos inimigos.
