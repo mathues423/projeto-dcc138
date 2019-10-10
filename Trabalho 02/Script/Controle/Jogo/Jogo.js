@@ -58,7 +58,7 @@ function Jogo(temp) {
     if (M.Ativo && M.song != undefined && M.boolImg) {// Aparece o menu.
         M.draw(dt);
     }else if(!M.Ativo){ // Roda o jogo.
-
+        
     }
     // context.fillText(`Dt: < ${Math.round(dt*1000)} >`,20,20);
     anterior = temp;
