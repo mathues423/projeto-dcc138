@@ -26,15 +26,20 @@ function DrawCel(Code) {
                     break;
             }
             context.fillRect(x,y , x+tamX,y+tamY);
-            context.fillStyle = "black";
-            context.fillText(`ID:${Hashing_Map[Code].cels[col][lin]}`,x,y+tamY/2);
-            context.fillText(`(${x}|${y})`,x,y+tamY);
             context.strokeRect(x,y , x+tamX,y+tamY);
             x+= tamX;
             cont++;
+            if (Hashing_Map[Code].cels[col][lin] == 0) {
+                context.fillStyle = "white";
+                console.log(Hashing_Map[Code].cels[col][lin]);
+            }else{
+                context.fillStyle = "black";
+            }
+            context.fillText(`ID:${Hashing_Map[Code].cels[col][lin]}`,x,y+tamY/2);
+            context.fillText(`(${x}|${y})`,x,y+tamY);
         }
         x=0;
-        console.log(`Cont:${cont}`);
+        // console.log(`Cont:${cont}`);
         y+= tamY;
     }
 }

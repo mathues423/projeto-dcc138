@@ -29,7 +29,7 @@ function Level() {
 Level.prototype.setId = function(col,lin, ID_MAP){
     if (col > -1 && lin > -1) {
         if (!Hashing_Map[ID_MAP]) {
-            throw new Error(`ERRO: Chave de audio inválida: ${ID_MAP}!`);
+            throw new Error(`ERRO: Id inválido: ${ID_MAP}!`);
         }
         this.mapa[col][lin] = ID_MAP;
     }else{

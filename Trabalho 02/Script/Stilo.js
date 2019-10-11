@@ -26,3 +26,10 @@ const MAX_W_L = MAX_H_L = 1;
 function addHashing_Map(Key_ID,parans){
     Hashing_Map[Key_ID] = parans;
 };
+
+function getHashing_Map(Key_ID) {
+    if (!Hashing_Map[Key_ID]) {
+        throw new Error(`ERRO: Chave de mapa inválida: ${ID_MAP}!`);
+    }
+    return Hashing_Map[Key_ID];
+};
