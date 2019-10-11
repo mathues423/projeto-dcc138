@@ -55,12 +55,12 @@ function Jogo(temp) {
     context.save();
     dt = (temp - anterior) / 1000;
     limpa();
-    if (M.Ativo && M.song != undefined && M.boolImg) {// Aparece o menu.
-        M.draw(dt);
-    }else if(!M.Ativo){ // Roda o jogo.
-        
-    }
-    // context.fillText(`Dt: < ${Math.round(dt*1000)} >`,20,20);
+    // if (M.Ativo && M.song != undefined && M.boolImg) {// Aparece o menu.
+    //     M.draw(dt);
+    // }else if(!M.Ativo){ // Roda o jogo.
+    //     Level.draw();
+    // }
+    
     anterior = temp;
     
     context.restore();

@@ -19,3 +19,10 @@ var dt = anterior = 0;
 const cores = ["#b87","#000","#800"];
 
 //Hashing dos mapas B(16).
+var Hashing_Map = {};
+const MAX_W_M = MAX_H_M = 10;
+const MAX_W_L = MAX_H_L = 5;
+
+function addHashing_Map(Key_ID,parans){
+    Hashing_Map[Key_ID] = parans;
+};
