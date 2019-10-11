@@ -25,7 +25,7 @@ Mapa.prototype.setTipo = function(tipo){
  * 
  * @param {Number} col : Indica a coluna da matriz.
  * @param {Number} lin : Indica a linha da matriz.
- * @param {Number} ID_CEL : Indica o tipo de preenchimento entre vazio (1), ocupado (1).
+ * @param {Number} ID_CEL : Indica o tipo de preenchimento entre vazio (1), ocupado (0).
  */
 Mapa.prototype.setCels = function (col,lin, ID_CEL){
     this.cels[col][lin] = ID_CEL;

@@ -60,14 +60,14 @@ function Jogo(temp) {
     // }else if(!M.Ativo){ // Roda o jogo.
     //     Level.draw();
     // }
-    
+    // DrawLevel(new Level());
     anterior = temp;
     
     context.restore();
     requestAnimationFrame(Jogo);
 }
 
-requestAnimationFrame(Jogo);
+// requestAnimationFrame(Jogo);
 
 function drawMenu(dt) {
     return function (dt) {
