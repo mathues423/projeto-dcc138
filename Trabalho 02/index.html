@@ -44,8 +44,16 @@
 <script>
     var TMAPA = new Mapa();
     var TLEVEL = new Level();
-    // TMAPA.setCels(0,0 ,1);
+    var TPERS = new Principal();
+    TLEVEL.char = TPERS;
     addHashing_Map("Teste", TMAPA);
+    for (let col = 0; col < MAX_H_M; col++) {
+        for (let lin = 0; lin < MAX_W_M; lin++) {
+            if (col < MAX_H_M-1) {
+                TMAPA.setCels(col,lin ,1);
+            }
+        }
+    }
     TLEVEL.setId(0,0 ,"Teste");
     DrawLevel(TLEVEL);
 </script>

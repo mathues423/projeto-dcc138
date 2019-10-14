@@ -1,6 +1,7 @@
 // Controla os conjuntos de mapas e suas posiçoes juntamente com os movimentos dos inimigos.
 function Level() {
     this.mapa = [];
+    this.char = undefined;
     if (!Hashing_Map["Completo"] || !Hashing_Map["Vazio"]) {
         var MAP0 = new Mapa();
         var MAP1 = new Mapa();

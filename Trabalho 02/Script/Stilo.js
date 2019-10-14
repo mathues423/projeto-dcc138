@@ -22,6 +22,7 @@ const cores = ["#b87","#000","#800"];
 var Hashing_Map = {};
 const MAX_W_M = MAX_H_M = 10;
 const MAX_W_L = MAX_H_L = 1;
+const GRAV = 9;
 
 function addHashing_Map(Key_ID,parans){
     Hashing_Map[Key_ID] = parans;

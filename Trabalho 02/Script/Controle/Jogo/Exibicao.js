@@ -1,5 +1,8 @@
 // Controle da exibição do personagem principal e do level(conjunto de mapas).
 function DrawLevel(level) {
+    if (level.char) {
+        level.char.Passo();
+    }
     for (let col = 0; col < MAX_H_L; col++) {
         for (let lin = 0; lin < MAX_W_L; lin++) {
             DrawCel(level.mapa[col][lin]);
