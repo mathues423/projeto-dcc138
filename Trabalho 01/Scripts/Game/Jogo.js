@@ -18,7 +18,7 @@ function frames(t) {
             if (Game[i] != null) {
                 Game[i].Principal = principal;
             }
-        }else{
+        }else if (assest.progresso){
             Game[i].print(context,dt);
         }
     }else{

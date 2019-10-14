@@ -618,9 +618,9 @@ Principal.prototype.desenhaBarraSkils = function (ctx, dt, can) {
         ctx.fillRect(5 * can.width / 7, can.height - 50, 40, 40 * this.abilidades.q.cdAux / this.abilidades.q.cd);
         
         ctx.globalAlpha = 0.5;
-        var imgSorwd = new Image();
-        imgSorwd.src = "Imgs/sword.jpg";
-        ctx.drawImage(imgSorwd, 5 * can.width / 7, can.height - 50, 40, 40);
+        // var imgSorwd = new Image();
+        // imgSorwd.src = "Imgs/sword.jpg";
+        ctx.drawImage(assest.getImg("Skil01"), 5 * can.width / 7, can.height - 50, 40, 40);
         ctx.globalAlpha = 1;
 
         ctx.fillStyle = "white";
