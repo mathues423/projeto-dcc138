@@ -9,6 +9,7 @@ function Fase(params = {}) {
         flagCompleta: false,
         animation: 5,
         spaw: false,
+        map: undefined,
     };
 
     Object.assign(this, fase, params);
@@ -22,9 +23,10 @@ Fase.prototype.constructor = Fase;
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Fase.prototype.print = function (ctx, dt) {
+    this.drawMap();
     if (!this.spaw) { // Spaw
         var can = document.querySelector("canvas");
-        this.Principal.x = 10;
+        this.Principal.x = 50;
         this.Principal.y = can.height/2-30;
         this.Principal.marcaX = -1;
         this.Principal.marcaY = -1;
@@ -127,4 +129,11 @@ Fase.prototype.morto = function(index){
         }
     }
     return false;
+};
+
+Fase.prototype.drawMap = function(){
+    if (this.map) {
+        
+    }
+        // throw new Error("Não adicionado map");
 };

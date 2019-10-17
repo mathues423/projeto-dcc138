@@ -1,4 +1,5 @@
 var assest = new Assets();
+// var TMapa = new Mapa(20,20);
 assest.loadImage("Prin", "Imgs/sprites/Principal.png");
 assest.loadImage("Green_Slime", "Imgs/sprites/GreenSlime.png");
 assest.loadImage("Skil01", "Imgs/sword.jpg");

@@ -39,7 +39,7 @@ function Principal(args = {}) {
         sprite: undefined,
         norte: false,
         leste: false,
-        x: 10,
+        x: 50,
         y: can.height / 2 - 30,
         parado: true,
         passo: 0,
@@ -79,8 +79,8 @@ function Principal(args = {}) {
         // marcaY: -1,
 
         ponto: {
-            x: 10,
-            y: 10,
+            x: 20,
+            y: 20,
             animacao: 1, 
         },
 
@@ -428,24 +428,24 @@ Principal.prototype.desenhaBarra = function (ctx, dt, can) {
     ctx.fillStyle = "#5a5a5a";
     ctx.lineWidth = 2;
     ctx.strokeStyle = "black";
-    ctx.strokeRect(0, can.height - 55, can.width, can.height);
-    ctx.fillRect(0, can.height - 55, can.width, can.height);
+    ctx.strokeRect(0, can.height - 60, can.width, can.height);
+    ctx.fillRect(0, can.height-60, can.width/2, can.height);
 
 
     ctx.fillStyle = 'hsl(' + 120 * this.porc(this.hp, this.hpMax) + ',100%,50%)';
-    ctx.fillRect(0, can.height - 40, tammax * this.porc(this.hp, this.hpMax), 20);
+    ctx.fillRect(10, can.height - 50, tammax * this.porc(this.hp, this.hpMax), 20);
 
 
     ctx.fillStyle = 'rgb(' + (255 - 200 * this.porc(this.mp, this.mpMax)) + ',' + (255 - 200 * this.porc(this.mp, this.mpMax)) + ',' + 255 * this.porc(this.mp, this.mpMax) + ')';
-    ctx.fillRect(0, can.height - 20, tammax * this.porc(this.mp, this.mpMax) / 2, 16);
+    ctx.fillRect(10, can.height - 20, tammax * this.porc(this.mp, this.mpMax) / 2, 16);
 
-    ctx.strokeRect(0, can.height - 20, tammax / 2, 16); // MP
-    ctx.strokeRect(0, can.height - 40, tammax, 20); // HP
+    ctx.strokeRect(10, can.height - 20, tammax / 2, 16); // MP
+    ctx.strokeRect(10, can.height - 50, tammax, 20); // HP
 
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
-    ctx.fillText("Hp: " + this.hp + " / " + this.hpMax + "    |     Nome: " + this.nome, tammax + 2, can.height - 16 * 2 + 16 / 2, tammax);
-    ctx.fillText("Mp: " + this.mp + " / " + this.mpMax + "    |     xp(Lvl): " + this.xp, tammax / 2 + 2, can.height - 16 / 2, tammax);
+    ctx.fillText("Hp: " + this.hp + " / " + this.hpMax + "    |     Nome: " + this.nome, tammax + 20, can.height - 22 * 2 + 16 / 2, tammax);
+    ctx.fillText("Mp: " + this.mp + " / " + this.mpMax + "    |     xp(Lvl): " + this.xp, tammax / 2 + 20, can.height - 16 / 2, tammax);
 
     ctx.lineWidth = 1;
 };
@@ -675,6 +675,7 @@ Principal.prototype.desenhaBarraSkils = function (ctx, dt, can) {
  */
 Principal.prototype.desenhaPonto = function (can,dt) {
     var ctx = can.getContext("2d");
+    ctx.fillStyle = "white";
     this.ponto.animacao -= dt;
     if ( this.ponto.animacao < 0) {
         this.ponto.animacao = 1;
