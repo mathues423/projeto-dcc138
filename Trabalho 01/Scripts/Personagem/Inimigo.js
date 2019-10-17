@@ -17,6 +17,8 @@ function Inimigo(args = {}) {
         vy: 0,
         vm: 60,
         angulo: undefined,
+        posiC:-1,
+        posiL:-1,
 
         //Caracteristicas
         nome:"???",
@@ -37,8 +39,9 @@ function Inimigo(args = {}) {
         tempSprite : 0.15,
         tempSpriteAux : 0.15,
 
-        x: can.width / 3 + Math.random() * (2 / 3 * can.width - 40),
-        y: can.height / 10 + Math.random() * (9 / 10 * can.height - 85),
+        x: can.width / 3 + Math.random() * (2 / 3 * can.width - 60),
+        y: can.height / 3 + Math.random() * (2 / 3 * can.height - 120),
+        spaw: false,
 
         //Controles de tempo
         hpstempaux: args.hpstemp,
@@ -72,12 +75,31 @@ Inimigo.prototype.constructor = Inimigo;
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
  * @param {Principal} principal -> principal.
+ * @param {Mapa} Mapa -> principal.
  */
-Inimigo.prototype.inf = function(ctx,dt,principal){
+Inimigo.prototype.inf = function(ctx,dt,principal,Mapa){
     var can = document.querySelector("canvas");
+    if(!this.spaw){
+        var list = [];
+        var cont = 0;
+        for (let coluna = 0; coluna < Mapa.Mapa.length; coluna++) {
+            for (let linha = 0; linha < Mapa.Mapa[coluna].length; linha++) {
+                if (Mapa.Mapa[coluna][linha]!=0) {
+                    list[cont] = {i:linha, j:coluna};
+                    cont++;
+                }
+            }
+        }
+        
+        let rand = Math.floor(Math.random()*cont);
+        this.x = list[rand].i*Mapa.W;
+        this.y = list[rand].j*Mapa.H;
+        console.log(`Base ${rand} Enemi criado em x: ${this.x} | y: ${this.y}`);
+        this.spaw = true;
+    }
     this.desenhaHpNome(ctx);
     this.desenhaPersonagem(ctx,dt);
-    this.mover(dt,can,principal);
+    this.mover(dt,can,principal,Mapa);
 };
 
 /** Função responsavel por desenhar a vida caso tiver perdido ou o nome.
@@ -158,11 +180,12 @@ Inimigo.prototype.desenhaPersonagem = function (ctx,dt){
     }
     for (let i = 0; i < this.danoVet.length; i++) {
         ctx.globalAlpha = this.danoVet[i].alf;
-        ctx.fillStyle = "white";
         if (this.danoVet[i].dano == "Doge") {
-            ctx.font = "12px sans-serif";
+            ctx.font = "14px sans-serif";
+            ctx.fillStyle = "#20211c";
         } else {
-            ctx.font = "15px sans-serif";
+            ctx.fillStyle = "red";
+            ctx.font = "17px sans-serif";
         }
         ctx.fillText(this.danoVet[i].dano, this.danoVet[i].x, this.danoVet[i].y);
         this.danoVet[i].y -= 1;
@@ -288,8 +311,11 @@ Inimigo.prototype.animacaoWalking = function(ctx,dt,img){
  * @param {HTMLCanvasElement} can -> canvas.
  * @param {Principal} principal -> principal.
  */
-Inimigo.prototype.mover = function (dt,can,principal){
+Inimigo.prototype.mover = function (dt,can,principal,Mapa){
+    // console.log(Mapa);
     if (this.agressivo) {
+        this.posiC = Math.floor(this.x / Mapa.W);
+        this.posiL = Math.floor(this.y / Mapa.H);
         if (Math.sign(principal.x - this.x)*(principal.x - this.x) > this.rangeFisico) {
             this.vx = this.vm*Math.sign(principal.x - this.x);
         }else{
@@ -304,8 +330,9 @@ Inimigo.prototype.mover = function (dt,can,principal){
 
         if ((this.x >= 0 && (this.x + this.w) <= can.width) 
         && (this.y >= 0 && (this.y + this.h) <= can.height)) {
-            this.x = this.x + this.vx * dt;
-            this.y = this.y + this.vy * dt;
+            this.aplicar(dt,Mapa);
+            // this.x = this.x + this.vx * dt;
+            // this.y = this.y + this.vy * dt;
         }else{
             // Saiu da borda
         }
@@ -326,17 +353,20 @@ Inimigo.prototype.mover = function (dt,can,principal){
             return;
         } 
         if (this.tempAndandoAux > 0) { // Animação Walking
+            this.posiC = Math.floor(this.y / Mapa.H);
+            this.posiL = Math.floor(this.x / Mapa.W);
             this.tempAndandoAux -= dt;
             
             this.vx = this.vm * Math.sin(this.angulo * Math.PI/180);
             this.vy = this.vm * Math.cos(this.angulo * Math.PI/180);
             
-            if ((this.x + this.vx * dt + this.w) < can.width && (this.x + this.vx * dt) >= 0) {
-                this.x = this.x + this.vx * dt;
-            }
-            if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
-                this.y = this.y + this.vy * dt;
-            }
+            this.aplicar(dt,Mapa);
+            // if ((this.x + this.vx * dt + this.w) < can.width && (this.x + this.vx * dt) >= 0) {
+            //     this.x = this.x + this.vx * dt;
+            // }
+            // if ((this.y + this.vy * dt + this.h) < can.height-55 && (this.y + this.vy * dt) >= 0) {
+            //     this.y = this.y + this.vy * dt;
+            // }
             return;
         }
         
@@ -369,7 +399,7 @@ Inimigo.prototype.dano = function(atkMin,atkMax){
             
             this.hp -= damage;
             if (this.hp <= 0){
-                console.log("Morto");
+                // console.log("Morto");
                 this.itsLife = false;
             }
         }else{
@@ -406,3 +436,42 @@ Inimigo.prototype.danoSkill = function(atkMin,atkMax, auxX, auxY){
         this.itsLife = false;
     }
 };
+
+Inimigo.prototype.aplicar = function (dt,Mapa) {
+    var dnx;
+    var dx;
+    var dy;
+    dx = this.vx * dt;
+    dnx = dx;
+    dy = this.vy * dt;
+    dny = dy;
+    if (dx > 0 && Mapa.Mapa[this.posiC][this.posiL + 1] === 0) {
+        dnx = Mapa.W * (this.posiL + 1) - (this.x + this.w );
+        dx = Math.min(dnx, dx);
+    }
+    if (dx < 0 && Mapa.Mapa[this.posiC][this.posiL - 1] === 0) {
+        dnx = Mapa.W * (this.posiL - 1 ) - (this.x - this.w );
+        dx = Math.max(dnx, dx);
+    }
+    if (dy > 0 && Mapa.Mapa[this.posiC + 1][this.posiL] === 0) {
+        dny = Mapa.H * (this.posiC + 1) - (this.y + this.h );
+        dy = Math.min(dny, dy);
+    }
+    if (dy < 0 && Mapa.Mapa[this.posiC - 1][this.posiL] === 0) {
+        dny = Mapa.H * (this.posiC - 1) - (this.y - this.h );
+        dy = Math.max(dny, dy);
+    }
+    this.x = this.x + dx;
+    this.y = this.y + dy;
+
+    var MAXX = Mapa.W * Mapa.linha - this.w ;
+    var MAXY = Mapa.H * Mapa.coluna - this.h ;
+
+    if (this.x > MAXX) this.x = MAXX;
+    if (this.y > MAXY) {
+        this.y = MAXY;
+        this.vy = 0;
+    }
+    if (this.x - this.w / 2 < 0) this.x = 0 + this.w / 2;
+    if (this.y - this.h / 2 < 0) this.y = 0 + this.h / 2;
+}

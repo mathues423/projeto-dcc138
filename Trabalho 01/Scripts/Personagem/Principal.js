@@ -11,6 +11,8 @@ function Principal(args = {}) {
         vx: 0,
         vy: 0,
         vm: 100,
+        posiL: -1,
+        posiC: -1,
 
         //Caracteristicas
         nome: "Ted Phill",
@@ -241,10 +243,10 @@ function resetKey(keyCode, Obj) {
  * @param {CanvasRenderingContext2D} ctx -> contexto do canvas (2D).
  * @param {Number} dt -> tempo do quadro em ms.
  */
-Principal.prototype.inf = function (ctx, dt) {
+Principal.prototype.inf = function (ctx, dt, Mapa) {
     var can = document.querySelector("canvas");
     this.desenhaPersonagem(ctx, dt);
-    this.mover(dt, can);
+    this.mover(dt, can, Mapa);
     this.desenhaBarra(ctx, dt, can);
     this.desenhaBarraSkils(ctx, dt, can);
 };
@@ -259,9 +261,11 @@ Principal.prototype.desenhaPersonagem = function (ctx, dt) {
         ctx.globalAlpha = this.danoVet[i].alf;
         ctx.fillStyle = "white";
         if (this.danoVet[i].dano == "Doge") {
-            ctx.font = "12px sans-serif";
+            ctx.font = "14px sans-serif";
+            ctx.fillStyle = "#20211c";
         } else {
-            ctx.font = "15px sans-serif";
+            ctx.font = "17px sans-serif";
+            ctx.fillStyle = "#e8441b";
         }
         ctx.fillText(this.danoVet[i].dano, this.danoVet[i].x, this.danoVet[i].y);
         this.danoVet[i].y -= 1;
@@ -464,13 +468,18 @@ Principal.prototype.porc = function (cima, baixo) {
  * 
  * @param {Number} dt -> tempo do quadro em ms.
  * @param {HTMLCanvasElement} can -> canvas.
+ * @param {Mapa} Mapa -> Mapa onde o  perçonagem está.
  */
-Principal.prototype.mover = function (dt, can) {
+Principal.prototype.mover = function (dt, can, Mapa) {
     this.abilidades.q.cdAux -= dt;
+    // console.log(Mapa);
     if (this.abilidades.q.cdAux < 0)
         this.abilidades.q.cdAux = 0;
+
     if (this.index != -1 || this.marcaX != -1 && this.marcaY != -1) {
         this.parado = false;
+        this.posiC = Math.floor(this.y / Mapa.H);
+        this.posiL = Math.floor(this.x / Mapa.W);
         if (this.index != -1) {
             this.marcaX = -1;
             this.marcaY = -1;
@@ -490,8 +499,9 @@ Principal.prototype.mover = function (dt, can) {
 
             if (((this.x) >= 0 && (this.x + Math.round(this.w)) <= can.width)
                 && ((this.y) >= 0 && (this.y + (this.h)) <= can.height)) {
-                this.x = this.x + this.vx * dt;
-                this.y = this.y + this.vy * dt;
+                    this.aplicar(dt,Mapa);
+                // this.x = this.x + this.vx * dt;
+                // this.y = this.y + this.vy * dt;
             } else {
                 // Saiu da borda
             }
@@ -523,13 +533,13 @@ Principal.prototype.mover = function (dt, can) {
             if ((this.y + (this.h)) >= this.marcaY - 1 && (this.y + (this.h)) <= this.marcaY + 1) {
                 this.vy = 0;
             }
-
-            if ((this.x + this.vx * dt + Math.round(this.w / 2)) < can.width && (this.x + this.vx * dt) >= 0) {
-                this.x = this.x + this.vx * dt;
-            }
-            if ((this.y + this.vy * dt + this.h) < can.height - 55 && (this.y + this.vy * dt) >= 0) {
-                this.y = this.y + this.vy * dt;
-            }
+            this.aplicar(dt,Mapa);
+            // if ((this.x + this.vx * dt + Math.round(this.w / 2)) < can.width && (this.x + this.vx * dt) >= 0) {
+            //     this.x = this.x + this.vx * dt;
+            // }
+            // if ((this.y + this.vy * dt + this.h) < can.height - 55 && (this.y + this.vy * dt) >= 0) {
+            //     this.y = this.y + this.vy * dt;
+            // }
 
             if (((this.x + Math.round(this.w / 2)) >= this.marcaX - 1 && (this.x + Math.round(this.w / 2)) <= this.marcaX + 1)
                 && ((this.y + (this.h)) >= this.marcaY - 1 && (this.y + (this.h)) <= this.marcaY + 1)) {
@@ -686,3 +696,63 @@ Principal.prototype.desenhaPonto = function (can,dt) {
     
         this.ponto.x * this.ponto.animacao / 2, this.ponto.y * this.ponto.animacao / 2);
 };
+
+Principal.prototype.aplicar = function (dt,Mapa) {
+    var dnx;
+    var dx;
+    var dy;
+    dx = this.vx * dt;
+    dnx = dx;
+    dy = this.vy * dt;
+    dny = dy;
+    // console.log(`C: ${Mapa.Mapa[this.posiC+1][this.posiL]} | ${Mapa.Mapa[this.posiC-1][this.posiL]}` );
+    // console.log(`L: ${Mapa.Mapa[this.posiC][this.posiL+1]} | ${Mapa.Mapa[this.posiC][this.posiL-1]}`);          
+    // if (dx > 0 && Mapa.Mapa[this.posiC + 1][this.posiL] === 0) {
+    //     dnx = Mapa.W * (this.posiC + 1) - (this.x + this.w );
+    //     dx = Math.min(dnx, dx);
+    // }
+    // if (dx < 0 && Mapa.Mapa[this.posiC - 1][this.posiL] === 0) {
+    //     dnx = Mapa.W * (this.posiC - 1 ) - (this.x - this.w );
+    //     dx = Math.max(dnx, dx);
+    // }
+    // if (dy > 0 && Mapa.Mapa[this.posiC][this.posiL + 1] === 0) {
+    //     dny = Mapa.H * (this.posiL + 1) - (this.y + this.h );
+    //     dy = Math.min(dny, dy);
+    // }
+    // if (dy < 0 && Mapa.Mapa[this.posiC][this.posiL - 1] === 0) {
+    //     dny = Mapa.H * (this.posiL - 1) - (this.y - this.h );
+    //     dy = Math.max(dny, dy);
+    // }
+
+
+    if (dx > 0 && Mapa.Mapa[this.posiC][this.posiL + 1] === 0) {
+        dnx = Mapa.W * (this.posiL + 1) - (this.x + this.w );
+        dx = Math.min(dnx, dx);
+    }
+    if (dx < 0 && Mapa.Mapa[this.posiC][this.posiL - 1] === 0) {
+        dnx = Mapa.W * (this.posiL - 1 ) - (this.x - this.w );
+        dx = Math.max(dnx, dx);
+    }
+    if (dy > 0 && Mapa.Mapa[this.posiC + 1][this.posiL] === 0) {
+        dny = Mapa.H * (this.posiC + 1) - (this.y + this.h );
+        dy = Math.min(dny, dy);
+    }
+    if (dy < 0 && Mapa.Mapa[this.posiC - 1][this.posiL] === 0) {
+        dny = Mapa.H * (this.posiC - 1) - (this.y - this.h );
+        dy = Math.max(dny, dy);
+    }
+
+    this.x = this.x + dx;
+    this.y = this.y + dy;
+
+    var MAXX = Mapa.W * Mapa.linha - this.w ;
+    var MAXY = Mapa.H * Mapa.coluna - this.h ;
+
+    if (this.x > MAXX) this.x = MAXX;
+    if (this.y > MAXY) {
+        this.y = MAXY;
+        this.vy = 0;
+    }
+    if (this.x - this.w / 2 < 0) this.x = 0 + this.w / 2;
+    if (this.y - this.h / 2 < 0) this.y = 0 + this.h / 2;
+}

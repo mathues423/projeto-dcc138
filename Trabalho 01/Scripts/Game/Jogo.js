@@ -26,8 +26,7 @@ function frames(t) {
         cancelAnimationFrame(1);
         return;
     }
-    // TMapa.drawMapa(context);
-    context.fillText(dt, 100,100);
+    // context.fillText(dt, 100,100);
     anterior = t;
     requestAnimationFrame(frames);
 }

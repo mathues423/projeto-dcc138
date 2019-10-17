@@ -32,15 +32,20 @@ Fase.prototype.print = function (ctx, dt) {
         this.Principal.marcaY = -1;
         this.Principal.inimigos = this.inimigos;
         this.spaw = true;
+
+        this.ponto.x = (this.map.linha-3)*this.map.W;
+        this.ponto.y = (8*this.map.H);
+        this.ponto.h = this.map.H*2;
+        this.ponto.w = this.map.W*2;
     }
     this.verifica(ctx, dt);
     for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
-        this.inimigos[i].inf(ctx,dt,this.Principal);
+        this.inimigos[i].inf(ctx,dt,this.Principal,this.map);
         if(this.morto(i)){
             i--;
         }
     }
-    this.Principal.inf(ctx, dt);
+    this.Principal.inf(ctx, dt,this.map);
     if (this.flagPonto && this.limpa) {
         this.flagCompleta = true;
     }

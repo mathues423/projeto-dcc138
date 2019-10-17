@@ -12,7 +12,7 @@ abilidades: {
     r: undefined,}, 
 });
 var Game = [];
-var TMapa = new Mapa(17,44);
+var TMapa = new Mapa(44,17);
 var F0 = new Fase({Principal: principal, map: TMapa});
 F0.insere(0,4);
 
