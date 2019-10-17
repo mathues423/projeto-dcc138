@@ -363,13 +363,15 @@ Inimigo.prototype.dano = function(atkMin,atkMax){
     if (this.hp > 0) {
         if (Math.random()*100 > this.doge) {
             let damage = Math.round(Math.random()*(atkMax-atkMin)+atkMin);
-            this.hp -= damage;
-            
             let i = {dano: damage, temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
             this.agressivo = true;
             this.danoVet.push(i);
-            if (this.hp <= 0)
+            
+            this.hp -= damage;
+            if (this.hp <= 0){
+                console.log("Morto");
                 this.itsLife = false;
+            }
         }else{
             let d = {dano: "Doge", temporestante: this.tempdano, x: this.x + this.w + 4, y: this.y + this.h / 2, alf: 1 }
             this.danoVet.push(d);

@@ -36,7 +36,7 @@ Assets.prototype.getImg = function (key) {
 
 Assets.prototype.progresso = function () {
     if (this.aCarregar != 0) {
-        return this.carregadas / this.aCarregar * 100.0;
+        return this.carregadas / this.aCarregar;
     } else return 0.0;
 
 }

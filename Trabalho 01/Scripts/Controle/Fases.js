@@ -36,14 +36,14 @@ Fase.prototype.print = function (ctx, dt) {
     this.verifica(ctx, dt);
     for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
         this.inimigos[i].inf(ctx,dt,this.Principal);
-        this.morto(i);
+        if(this.morto(i)){
+            i--;
+        }
     }
     this.Principal.inf(ctx, dt);
-
     if (this.flagPonto && this.limpa) {
         this.flagCompleta = true;
     }
-    
 };
 
 /** Função que verifica se o jogador limpou e chegou no ponto para passar de fase.
@@ -120,7 +120,7 @@ Fase.prototype.insere = function(id,quantidade){
  * @returns True se tiver morto, false caso não.
  */
 Fase.prototype.morto = function(index){
-    if (this.inimigos[index] != null || this.inimigos[index] != undefined) {
+    if (this.inimigos[index]) {
         if (!this.inimigos[index].itsLife) {
             this.Principal.xp += this.inimigos[index].xp;
             this.inimigos.splice(index,1);
@@ -132,8 +132,10 @@ Fase.prototype.morto = function(index){
 };
 
 Fase.prototype.drawMap = function(){
+    var context = document.querySelector("canvas").getContext("2d");
     if (this.map) {
-        
+        this.map.drawMapa(context);
+    }else{
+        throw new Error("Não adicionado map");
     }
-        // throw new Error("Não adicionado map");
 };
