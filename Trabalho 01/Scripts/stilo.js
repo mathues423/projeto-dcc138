@@ -1,6 +1,5 @@
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
-context.save();
 canvas.width = 1320;
 canvas.height = 570;
 

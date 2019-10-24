@@ -30,6 +30,8 @@ Fase.prototype.print = function (ctx, dt) {
         this.Principal.y = can.height/2-30;
         this.Principal.marcaX = -1;
         this.Principal.marcaY = -1;
+        this.Principal.posiL= 8;
+        this.Principal.posiC = 1;
         this.Principal.inimigos = this.inimigos;
         this.spaw = true;
 

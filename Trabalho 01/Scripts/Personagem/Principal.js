@@ -136,8 +136,23 @@ function setClick(e, Obj) {
     }
 }
 
+/// MElhorias no DEBUG
 document.addEventListener("keydown", function (e) {
     principal.setKeys(e.keyCode, principal, true);
+    // if (e.keyCode === 192) {
+    //     DEBUG = true;
+    // }
+    // if (DEBUG) {
+    //     if (e.keyCode === 187) {
+    //         context.save();
+    //         context.scale(1.1,1.1);
+    //     }
+    //     if (e.keyCode === 189) {
+    //         context.save();
+    //         context.scale(0.9,0.9);
+    //     }
+    // }
+    // context.restore();
 });
 
 document.addEventListener("keyup", function (e) {
@@ -563,21 +578,23 @@ Principal.prototype.mover = function (dt, can, Mapa) {
  */
 Principal.prototype.verifica = function (marcaX, marcaY) {
     let mx = false, my = false;
-    for (let i = 0; i < this.inimigos.length; i++) {
-        this.inimigos[i].marcado = false;
-    }
-    for (let i = 0; i < this.inimigos.length; i++) {
-        if (marcaX >= this.inimigos[i].x && marcaX <= this.inimigos[i].x + this.inimigos[i].w) {
-            mx = true;
+    if (this.inimigos[0]) {
+        for (let i = 0; i < this.inimigos.length; i++) {
+            this.inimigos[i].marcado = false;
         }
-
-        if (marcaY >= this.inimigos[i].y && marcaY <= this.inimigos[i].y + this.inimigos[i].h) {
-            my = true;
-        }
-
-        if (mx && my) {
-            this.index = i;
-            return true;
+        for (let i = 0; i < this.inimigos.length; i++) {
+            if (marcaX >= this.inimigos[i].x && marcaX <= this.inimigos[i].x + this.inimigos[i].w) {
+                mx = true;
+            }
+    
+            if (marcaY >= this.inimigos[i].y && marcaY <= this.inimigos[i].y + this.inimigos[i].h) {
+                my = true;
+            }
+    
+            if (mx && my) {
+                this.index = i;
+                return true;
+            }
         }
     }
     this.index = -1;
@@ -676,6 +693,9 @@ Principal.prototype.desenhaBarraSkils = function (ctx, dt, can) {
         ctx.fillText("R", 5 * can.width / 7 + 150, can.height - 50 + 25);
         ctx.globalAlpha = 1;
     }
+
+    // <-- DEBUG -->
+    // ctx.fillText(`Dt(${Math.floor(dt*1000)})`, can.width / 7 + 140,can.height - 40 + 30);
 };
 
 /**

@@ -12,12 +12,16 @@ abilidades: {
     r: undefined,}, 
 });
 var Game = [];
-var TMapa = new Mapa(44,17);
-var F0 = new Fase({Principal: principal, map: TMapa});
+
+var P = Precriado();
+console.log(P);
+var F0 = new Fase({Principal: principal, map: P.CorredorN});
 F0.insere(0,4);
 
-var F1 = new Fase({Principal: principal, map: TMapa});
-F1.insere(0,10);
+// var F1 = new Fase({Principal: principal, map: TMapa_2});
+// F1.insere(0,10);
+// Game.push(F1);
 
 Game.push(F0);
-Game.push(F1);
+
+var DEBUG = false;
