@@ -4,7 +4,6 @@ function Fase(params = {}) {
         Principal: undefined,
         inimigos: [],
         limpa: false,
-        ponto: { x: can.width - 40, y: can.height / 2 - 25, w: 25, h: 25, cor: "green" },
         flagPonto: false,
         flagCompleta: false,
         animation: 5,
@@ -34,11 +33,6 @@ Fase.prototype.print = function (ctx, dt) {
         this.Principal.posiC = 1;
         this.Principal.inimigos = this.inimigos;
         this.spaw = true;
-
-        this.ponto.x = (this.map.linha-3)*this.map.W;
-        this.ponto.y = (8*this.map.H);
-        this.ponto.h = this.map.H*2;
-        this.ponto.w = this.map.W*2;
     }
     this.verifica(ctx, dt);
     for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
@@ -61,19 +55,15 @@ Fase.prototype.print = function (ctx, dt) {
 Fase.prototype.verifica = function (ctx, dt) {
     if (!this.limpa && this.inimigos[0] == null || this.inimigos[0] == undefined) {
         this.limpa = true;
+        for (let index = 0; index < this.map.Portas.length; index++) {
+            this.map.Mapa[this.map.Portas[index].coluna][this.map.Portas[index].linha] = 2;
+        }
     }
     if (this.limpa) {
-        this.draw(ctx, dt);
-        let flagX = false, flagY = false;
-        if ((this.Principal.x + Math.round(this.Principal.w / 2)) > this.ponto.x && (this.Principal.x + Math.round(this.Principal.w / 2)) < this.ponto.x + this.ponto.w) {
-            flagX = true;
-        }
-        if ((this.Principal.x + Math.round(this.Principal.w / 2)) > this.ponto.x && (this.Principal.x + Math.round(this.Principal.w / 2)) < this.ponto.x + this.ponto.w) {
-            flagY = true;
-        }
-
-        if (flagX && flagY) {
-            this.flagPonto = true;
+        for (let index = 0; index < this.map.Portas.length; index++) {
+            if (this.Principal.posiL == this.map.Portas[index].linha && this.Principal.posiC == this.map.Portas[index].coluna) {
+                this.flagPonto = true;
+            }
         }
     }
 };
@@ -88,16 +78,7 @@ Fase.prototype.draw = function (ctx, dt) {
     if (this.animation < 0) {
         this.animation = 5;
     }
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.strokeRect(this.ponto.x, this.ponto.y, this.ponto.w, this.ponto.h);
-
-    ctx.fillStyle = this.ponto.cor;
-    ctx.fillRect(
-    this.ponto.x + (this.ponto.w / 2 - this.ponto.w / 10 * this.animation), 
-    this.ponto.y + (this.ponto.h / 2 - this.ponto.h / 10 * this.animation),
-
-    this.ponto.w * this.animation / 5, this.ponto.h * this.animation / 5);
+    
 };
 
 /** Função que verifica se o jogador limpou e chegou no ponto para passar de fase
@@ -141,7 +122,7 @@ Fase.prototype.morto = function(index){
 Fase.prototype.drawMap = function(){
     var context = document.querySelector("canvas").getContext("2d");
     if (this.map) {
-        this.map.drawMapa(context);
+        this.map.drawMapa(context, this.Principal);
     }else{
         throw new Error("Não adicionado map");
     }

@@ -15,7 +15,7 @@ var Game = [];
 
 var P = Precriado();
 console.log(P);
-var F0 = new Fase({Principal: principal, map: P.CorredorN});
+var F0 = new Fase({Principal: principal, map: P.Spaw});
 F0.insere(0,4);
 
 // var F1 = new Fase({Principal: principal, map: TMapa_2});

@@ -3,9 +3,8 @@ class Mapa {
      * 
      * @param {Number} maxW Numero de linhas da martriz do mapa.
      * @param {Number} maxH Numero de colunas da matriz do mapa.
-     * @param {Princiapl} principal Personagem principal do jogo.
      */
-    constructor(maxW,maxH, principal) {
+    constructor(maxW,maxH) {
         if (maxW < 44 || maxH < 17 || maxW > 44 || maxH > 17) {
             throw new Error(`Valor maxW 44 add(${maxW}) | Valor maxH 17 add(${maxH}).`);
         }
@@ -18,6 +17,8 @@ class Mapa {
         this.coluna = maxH;
         this.Mapa = [];
         this.personagem = principal;
+        this.Portas = [];
+        this.completa = false;
         for (let coluna = 0; coluna < maxH; coluna++) {
             this.Mapa[coluna] = [];
             for (let linha = 0; linha < maxW; linha++) {
@@ -45,9 +46,9 @@ class Mapa {
      * 
      * @param {CanvasRenderingContext2D} context Contexto do canvas (2D).
      */
-    drawMapa(context){
+    drawMapa(context, personagem){
         context.strokeStyle = "#7c7c7c";
-        if (this.personagem) {
+        if (personagem) {
             for (let coluna = 0; coluna < this.Mapa.length; coluna++) {
                 for (let linha = 0; linha < this.Mapa[coluna].length; linha++) {
                     switch (this.Mapa[coluna][linha]) {
@@ -57,7 +58,10 @@ class Mapa {
                         case 1:
                             context.fillStyle = "#f7ca42";
                             break;
-                    
+                        case 2:
+                            context.fillStyle = "#228B22";
+                            break;
+
                         default:
                             context.fillStyle = "#FFF";
                             break;
@@ -77,9 +81,26 @@ class Mapa {
         }else
             throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
     }
+
+    set(coluna,linha, val){
+        if (this.Mapa[coluna][linha] != undefined) {
+            this.Mapa[coluna][linha] = val;
+        }else
+            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
+    }
+
+    setPortas(coluna,linha){
+        if (this.Mapa[coluna][linha] != undefined) {
+            let cont = this.Portas.length;
+            this.Portas[cont] = {coluna: coluna, linha: linha};
+        }else
+            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
+    
+    }
 }
 
 function Precriado() {
+
     var TMapa = new Mapa(44,17);
     var Chest = new Mapa(44,17);
     var CorredorN = new Mapa(44,17);
@@ -106,6 +127,13 @@ function Precriado() {
         CorredorN.setMapa(index,3);
         CorredorN.setMapa(index,1);
     }
-    var lista = {TMapa: TMapa, Chest: Chest, CorredorN: CorredorN};
+    var Spaw = new Mapa(44,17);
+    Spaw.setMapa(10,Spaw.linha-2);
+    Spaw.setMapa(7,Spaw.linha-2);
+
+    Spaw.setPortas(9,Spaw.linha-2);
+    Spaw.setPortas(8,Spaw.linha-2);
+
+    var lista = {TMapa: TMapa, Chest: Chest, CorredorN: CorredorN, Spaw: Spaw};
     return lista;
 }
