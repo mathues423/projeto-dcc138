@@ -6,10 +6,9 @@ class Mapa {
      */
     constructor(maxW,maxH) {
         if (maxW < 44 || maxH < 17 || maxW > 44 || maxH > 17) {
-            throw new Error(`Valor maxW 44 add(${maxW}) | Valor maxH 17 add(${maxH}).`);
+            throw new Error(`Valor maxW 44 adicionado(${maxW}) | Valor maxH 17 adicionado(${maxH}).`);
         }
         this.list = undefined;
-        // this.pre = Precriado();
         this.casasVazias = -1;
         this.H = 30;
         this.W = 30;
@@ -31,15 +30,6 @@ class Mapa {
                 }
             }
         }
-        // this.Mapa[10][2] = 0;
-        // this.Mapa[10][1] = 0;
-        // this.Mapa[7][2] = 0;
-        // this.Mapa[7][1] = 0;
-
-        // this.Mapa[10][this.linha-3] = 0;
-        // this.Mapa[10][this.linha-2] = 0;
-        // this.Mapa[7][this.linha-3] = 0;
-        // this.Mapa[7][this.linha-2] = 0;
     }
 
     /** Função responsavel por imprimir o mapa.
@@ -81,14 +71,7 @@ class Mapa {
         }else
             throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
     }
-
-    set(coluna,linha, val){
-        if (this.Mapa[coluna][linha] != undefined) {
-            this.Mapa[coluna][linha] = val;
-        }else
-            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
-    }
-
+    
     setPortas(coluna,linha){
         if (this.Mapa[coluna][linha] != undefined) {
             let cont = this.Portas.length;
@@ -96,6 +79,26 @@ class Mapa {
         }else
             throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
     
+    }
+
+    SpawPrincipal(Principal, linha, coluna){
+        var can = document.querySelector("canvas");
+        Principal.marcaX = -1;
+        Principal.marcaY = -1;
+
+        // Ta invertido ou n. n sei ?????
+        Principal.posiL= linha; 
+        Principal.posiC = coluna;
+
+        Principal.x = coluna*this.W;
+        Principal.y = linha*this.H;
+    }
+
+    set(coluna,linha, val){
+        if (this.Mapa[coluna][linha] != undefined) {
+            this.Mapa[coluna][linha] = val;
+        }else
+            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
     }
 }
 
