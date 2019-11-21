@@ -10,6 +10,7 @@ function Fase(params = {},col,linha) {
         spaw: false,
         map: undefined,
         vetMap: undefined,
+        vetDist: undefined,
     };
     Object.assign(this, fase, params);
 }
@@ -131,6 +132,7 @@ Fase.prototype.drawMap = function(){
  */
 Fase.prototype.criaFase = function(maxH,maxW){
     if (!this.criada) {
+        // this.criada = true;
         this.vetMap = [];
         this.linhaFase = maxH;
         this.colunaFase = maxW;
@@ -151,7 +153,6 @@ Fase.prototype.criaFase = function(maxH,maxW){
         this.vetMap[coluna][0] = P.Spaw;
 
         console.log(`Criada com colunas ${maxH} | linhas ${maxW}`);
-        // console.log(`Spaw(coluna ${0} | linha ${0});Fim(coluna ${coluna} | linha ${linha});`);
         this.costrutivo();
     }else{
         throw new Error(`A fase já foi criada com os parametros (colunas ${maxH} | linhas ${maxW}) não é possivel sobrescrever-la.`);
@@ -159,46 +160,60 @@ Fase.prototype.criaFase = function(maxH,maxW){
 };
 
 Fase.prototype.costrutivo = function (){
+    let colSpaw,linSpaw;
+    let colFim,linFim;
+    for (let coluna = 0; coluna < this.colunaFase; coluna++) {
+        for (let linha = 0; linha < this.linhaFase; linha++) {
+            if (this.vetMap[coluna][linha] == P.Spaw) {
+                colSpaw = coluna;
+                linSpaw = linha;
+                coluna = this.colunaFase;
+                linha = this.linhaFase;
+            }
+        }
+    }
+    console.log(`Spaw : Coluna ${colSpaw} | Linha ${linSpaw}`);
     console.log(`VETOR DO MAPA ANTES DO TRATAMENTO DE GERAÇÂO:`);
     console.log(this.vetMap);
-    var vetDist = [];
-    for (let coluna = 0; coluna < this.colunaFase; coluna++) {
-        vetDist[coluna] = [];
-        for (let linha = 0; linha < this.linhaFase; linha++) {
-            vetDist[coluna][linha] = 0;
+    this.vetDist = [];
+    for ( coluna = 0; coluna < this.colunaFase; coluna++) {
+        this.vetDist[coluna] = [];
+        for ( linha = 0; linha < this.linhaFase; linha++) {
+            this.vetDist[coluna][linha] = Infinity;
         }
     }
-    this.distAux(vetDist);
-    console.log(vetDist);
+    this.distAux(colSpaw,linSpaw);
+    for (coluna = 0; coluna < this.colunaFase; coluna++) {
+        for (linha = 0; linha < this.linhaFase; linha++) {
+            if (this.vetMap[coluna][linha] == P.FimBranco) {
+                colFim = coluna;
+                linFim = linha;
+                coluna = this.colunaFase;
+                linha = this.linhaFase;
+            }
+        }
+    }
+    console.log(`Fim : Coluna ${colFim} | Linha ${linFim}`);
+    // console.log(this.vetDist);
     console.log(`VETOR DO MAPA DEPOIS DO TRATAMENTO DE GERAÇÂO:`);
+    console.log(this.vetMap);
 };
 
-Fase.prototype.distAux = function (vetor) {
-    let col,lin;
-    for (var coluna = 0; coluna < this.colunaFase; coluna++) {
-        for (var linha = 0; linha < this.linhaFase; linha++) {
-            if (this.vetMap[coluna][linha] == P.Spaw) {
-                col = coluna;
-                lin = linha;
-            }
-        }
-    }
-    console.log(`Coluna ${col} | Linha ${lin}`);
-    this.dist(vetor, col,lin, 0);
+Fase.prototype.distAux = function (col,lin) {
+    this.dist(col,lin,0, +1,+1);
+    this.dist(col,lin,0, -1,+1);
+    this.dist(col,lin,0, +1,-1);
+    this.dist(col,lin,0, -1,-1);
 };
 
-Fase.prototype.dist = function (vetor,coluna,linha,anterior) {
-    if (coluna < this.colunaFase && linha < this.linhaFase) {
-        if (this.vetMap[coluna][linha] == P.Spaw) {
-            vetor[coluna][linha] = 0;
-        }else{
-            if (vetor[coluna][linha] < anterior) {
-                vetor[coluna][linha] = anterior;
-            }
-        }
-        this.dist(vetor,coluna+1,linha,anterior+1);
-        this.dist(vetor,coluna,linha+1,anterior+1);
-    }else{
+Fase.prototype.dist = function (col,lin,anterior,numC,numL) {
+    if (col < 0 || col >= this.colunaFase || lin < 0 || lin >= this.linhaFase) {
         return;
     }
+    if (this.vetDist[col][lin] < anterior) {
+        return;
+    }
+    this.vetDist[col][lin] = anterior; 
+    this.dist(col+numC, lin, anterior+1, numC, numL);
+    this.dist(col, lin+numL, anterior+1, numC, numL);
 };

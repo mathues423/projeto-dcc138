@@ -18,6 +18,7 @@ class Mapa {
         this.personagem = principal;
         this.Portas = [];
         this.completa = false;
+        this.Tdist = 0;
         for (let coluna = 0; coluna < maxH; coluna++) {
             this.Mapa[coluna] = [];
             for (let linha = 0; linha < maxW; linha++) {
@@ -141,7 +142,9 @@ class Mapa {
 
 function Precriado() {
     //Ligar os mapas
-    var TMapa = new Mapa(44,17);
+    var MapaBranco = new Mapa(44,17);
+    var FimBranco = new Mapa(44,17);
+
     var Chest = new Mapa(44,17);
     var Spaw = new Mapa(44,17);
     Spaw.setMapa(10,Spaw.linha-2);
@@ -150,7 +153,6 @@ function Precriado() {
     Spaw.setPortas(9,Spaw.linha-2);
     Spaw.setPortas(8,Spaw.linha-2);
 
-    var FimBranco = new Mapa(44,17);
     
     var FimE = new Mapa(44,17);
     FimE.setMapa(10,1);
@@ -197,7 +199,7 @@ function Precriado() {
     
     CoredorOL.setPortas(9,1);
     CoredorOL.setPortas(8,1);
-    var lista = {TMapa: TMapa, Chest: Chest, CorredorNS: CorredorNS,
+    var lista = {MapaBranco: MapaBranco, Chest: Chest, CorredorNS: CorredorNS,
         Spaw: Spaw, FimE: FimE, CoredorOL: CoredorOL, FimBranco: FimBranco};
     return lista;
 }
