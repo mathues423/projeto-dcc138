@@ -1,5 +1,5 @@
-function Fase(params = {}) {
-    var can = document.querySelector("canvas");
+function Fase(params = {},col,linha) {
+    // var can = document.querySelector("canvas");
     fase = {
         Principal: undefined,
         inimigos: [],
@@ -9,8 +9,8 @@ function Fase(params = {}) {
         animation: 5,
         spaw: false,
         map: undefined,
+        vetMap: undefined,
     };
-
     Object.assign(this, fase, params);
 }
 
@@ -48,7 +48,7 @@ Fase.prototype.print = function (ctx, dt) {
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Fase.prototype.verifica = function (ctx, dt) {
-    if (!this.limpa && this.inimigos[0] == null || this.inimigos[0] == undefined) {
+    if (!this.limpa && this.inimigos == null || this.inimigos == undefined) {
         this.limpa = true;
         for (let index = 0; index < this.map.Portas.length; index++) {
             this.map.Mapa[this.map.Portas[index].coluna][this.map.Portas[index].linha] = 2;
@@ -120,5 +120,37 @@ Fase.prototype.drawMap = function(){
         this.map.drawMapa(context, this.Principal);
     }else{
         throw new Error("Não adicionado map");
+    }
+};
+
+/** Função que é responsavel por criar a fese e so é chamada uma vez.
+ * 
+ * @param {Number} maxH -> Define o numero de #linhas.
+ * @param {Number} maxW -> Define o numero de #colunas.
+ * @throws Se a fase já foi criada.
+ */
+Fase.prototype.criaFase = function(maxH,maxW){
+    if (!this.criada) {
+        this.vetMap = [];
+        this.linhaFase = maxH;
+        this.colunaFase = maxW;
+        for (let coluna = 0; coluna < maxW; coluna++) {
+            this.vetMap[coluna] = [];
+            for (let linha = 0; linha < maxH; linha++) {
+                this.vetMap[coluna][linha] = undefined;
+                if (coluna == 0 && linha == 0) { // Deixar espaw aleatorio?
+                    this.vetMap[coluna][linha] = P.Spaw;   
+                }
+            }
+        }
+        let coluna = Math.floor(Math.random()*(this.colunaFase-1));
+        let linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
+        this.vetMap[coluna][linha] = P.Fim;
+
+        this.criada = true;
+        console.log(`Criada com colunas ${maxH} | linhas ${maxW}`);
+        console.log(`Spaw(coluna ${0} | linha ${0}) Fim(coluna ${coluna} | linha ${linha})`);
+    }else{
+        throw new Error(`A fase já foi criada com os parametros (colunas ${maxH} | linhas ${maxW}) não é possivel sobrescrever-la.`);
     }
 };

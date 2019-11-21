@@ -80,37 +80,29 @@ Inimigo.prototype.constructor = Inimigo;
 Inimigo.prototype.inf = function(ctx,dt,principal,Mapa){
     var can = document.querySelector("canvas");
     if(!this.spaw){
-        if (Mapa.list) {
-            let rand = Math.floor(Math.random()*Mapa.casasVazias);
-            this.x = Mapa.list[rand].i*Mapa.W;
-            this.y = Mapa.list[rand].j*Mapa.H;
-            console.log(`Base ${rand} Enemi criado em x: ${this.x} | y: ${this.y}`);
-        }else{
-            var list = [];
-            var cont = 0;
-            for (let coluna = 0; coluna < Mapa.Mapa.length; coluna++) {
-                for (let linha = 0; linha < Mapa.Mapa[coluna].length; linha++) {
-                    if (Mapa.Mapa[coluna][linha]!=0) {
-                        list[cont] = {i:linha, j:coluna};
-                        cont++;
-                    }
-                }
-            }
-            Mapa.list = list;
-            Mapa.casasVazias = cont;
-            let rand = Math.floor(Math.random()*cont);
-            this.x = list[rand].i*Mapa.W;
-            this.y = list[rand].j*Mapa.H;
-            console.log(`Lista criada no mapa com um total de ${cont} casa(s) vazia(s).`);
-            console.log(`Base ${rand} Enemi criado em x: ${this.x} | y: ${this.y}`);
-        }
-        
-        this.spaw = true;
+        this.spawInimigo(Mapa);
     }
     this.desenhaHpNome(ctx);
     this.desenhaPersonagem(ctx,dt);
     this.mover(dt,can,principal,Mapa);
 };
+
+Inimigo.prototype.spawInimigo = function (Mapa){
+    if (Mapa.casasVazias != undefined) {
+        let rand = Math.floor(Math.random()*Mapa.casasVazias);
+        this.x = Mapa.list[rand].i*Mapa.W;
+        this.y = Mapa.list[rand].j*Mapa.H;
+        console.log(`Base ${rand} Enemi criado em x: ${this.x} | y: ${this.y}`);
+    }else{
+        Mapa.celulasVazias();
+        let rand = Math.floor(Math.random()*Mapa.casasVazias);
+        this.x = Mapa.list[rand].i*Mapa.W;
+        this.y = Mapa.list[rand].j*Mapa.H;
+        console.log(`Lista criada no mapa com um total de ${Mapa.casasVazias} casa(s) vazia(s).`);
+        console.log(`Base ${rand} Enemi criado em x: ${this.x} | y: ${this.y}`);
+    }
+    this.spaw = true;
+}
 
 /** Função responsavel por desenhar a vida caso tiver perdido ou o nome.
  * 

@@ -5,11 +5,11 @@ class Mapa {
      * @param {Number} maxH Numero de colunas da matriz do mapa.
      */
     constructor(maxW,maxH) {
-        if (maxW < 44 || maxH < 17 || maxW > 44 || maxH > 17) {
-            throw new Error(`Valor maxW 44 adicionado(${maxW}) | Valor maxH 17 adicionado(${maxH}).`);
+        if (maxW != 44 || maxH != 17) {
+            throw new Error(`Valor maxW tem que ser 44 adicionado(${maxW}) | Valor maxH tem que ser 17 adicionado(${maxH}).`);
         }
         this.list = undefined;
-        this.casasVazias = -1;
+        this.casasVazias = undefined;
         this.H = 30;
         this.W = 30;
         this.linha = maxW;
@@ -75,14 +75,27 @@ class Mapa {
     setPortas(coluna,linha){
         if (this.Mapa[coluna][linha] != undefined) {
             let cont = this.Portas.length;
-            this.Portas[cont] = {coluna: coluna, linha: linha};
+            let verificador = {cima: undefined, direita: undefined};
+            console.log(`Valor da coluna ${coluna} | linha ${linha}.`);
+            if (coluna > 15) {
+                verificador.cima = true;
+            } else if(coluna < 2){
+                verificador.cima = false;
+            }
+            if (linha > 41) {
+                verificador.direita = true;
+            }else if(linha < 2){
+                verificador.direita = false;
+            }
+            console.log(`Verificador norte: ${verificador.cima} | leste: ${verificador.direita}`);
+            this.Portas[cont] = {coluna: coluna, linha: linha, proxSala: verificador};
         }else
-            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
+            throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`);
     
     }
 
     SpawPrincipal(Principal, linha, coluna){
-        var can = document.querySelector("canvas");
+        // var can = document.querySelector("canvas");
         Principal.marcaX = -1;
         Principal.marcaY = -1;
 
@@ -100,10 +113,34 @@ class Mapa {
         }else
             throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
     }
+
+    itsClear(){
+        if(this.personagem.inimigos == null || this.personagem.inimigos == undefined){
+            this.completa = true;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    celulasVazias(){
+        var list = [];
+        var cont = 0;
+        for (let coluna = 0; coluna < this.Mapa.length; coluna++) {
+            for (let linha = 0; linha < this.Mapa[coluna].length; linha++) {
+                if (this.Mapa[coluna][linha]!=0) {
+                    list[cont] = {i:linha, j:coluna};
+                    cont++;
+                }
+            }
+        }
+        this.list = list;
+        this.casasVazias = cont;
+    }
 }
 
 function Precriado() {
-
+    //Ligar os mapas
     var TMapa = new Mapa(44,17);
     var Chest = new Mapa(44,17);
     var CorredorN = new Mapa(44,17);
@@ -137,6 +174,13 @@ function Precriado() {
     Spaw.setPortas(9,Spaw.linha-2);
     Spaw.setPortas(8,Spaw.linha-2);
 
-    var lista = {TMapa: TMapa, Chest: Chest, CorredorN: CorredorN, Spaw: Spaw};
+    var Fim = new Mapa(44,17);
+    Fim.setMapa(10,1);
+    Fim.setMapa(7,1);
+
+    Fim.setPortas(9,1);
+    Fim.setPortas(8,1);
+
+    var lista = {TMapa: TMapa, Chest: Chest, CorredorN: CorredorN, Spaw: Spaw, Fim: Fim};
     return lista;
 }
