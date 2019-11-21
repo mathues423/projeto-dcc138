@@ -138,19 +138,67 @@ Fase.prototype.criaFase = function(maxH,maxW){
             this.vetMap[coluna] = [];
             for (let linha = 0; linha < maxH; linha++) {
                 this.vetMap[coluna][linha] = undefined;
-                if (coluna == 0 && linha == 0) { // Deixar espaw aleatorio?
-                    this.vetMap[coluna][linha] = P.Spaw;   
-                }
+                // if (coluna == 0 && linha == 0) { // Deixar espaw aleatorio?
+                //     this.vetMap[coluna][linha] = P.Spaw;   
+                // }
             }
         }
-        let coluna = Math.floor(Math.random()*(this.colunaFase-1));
+        let coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
         let linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
-        this.vetMap[coluna][linha] = P.Fim;
+        this.vetMap[coluna][linha] = P.FimBranco;
 
-        this.criada = true;
+        coluna = Math.floor(Math.random()*(this.colunaFase-1));
+        this.vetMap[coluna][0] = P.Spaw;
+
         console.log(`Criada com colunas ${maxH} | linhas ${maxW}`);
-        console.log(`Spaw(coluna ${0} | linha ${0}) Fim(coluna ${coluna} | linha ${linha})`);
+        // console.log(`Spaw(coluna ${0} | linha ${0});Fim(coluna ${coluna} | linha ${linha});`);
+        this.costrutivo();
     }else{
         throw new Error(`A fase já foi criada com os parametros (colunas ${maxH} | linhas ${maxW}) não é possivel sobrescrever-la.`);
+    }
+};
+
+Fase.prototype.costrutivo = function (){
+    console.log(`VETOR DO MAPA ANTES DO TRATAMENTO DE GERAÇÂO:`);
+    console.log(this.vetMap);
+    var vetDist = [];
+    for (let coluna = 0; coluna < this.colunaFase; coluna++) {
+        vetDist[coluna] = [];
+        for (let linha = 0; linha < this.linhaFase; linha++) {
+            vetDist[coluna][linha] = 0;
+        }
+    }
+    this.distAux(vetDist);
+    console.log(vetDist);
+    console.log(`VETOR DO MAPA DEPOIS DO TRATAMENTO DE GERAÇÂO:`);
+};
+
+Fase.prototype.distAux = function (vetor) {
+    let col,lin;
+    for (var coluna = 0; coluna < this.colunaFase; coluna++) {
+        for (var linha = 0; linha < this.linhaFase; linha++) {
+            if (this.vetMap[coluna][linha] == P.Spaw) {
+                col = coluna;
+                lin = linha;
+            }
+        }
+    }
+    console.log(`Coluna ${col} | Linha ${lin}`);
+    this.dist(vetor, col,lin, 0);
+};
+
+Fase.prototype.dist = function (vetor,coluna,linha,anterior) {
+    if (coluna < this.colunaFase && linha < this.linhaFase) {
+        if (this.vetMap[coluna][linha] == P.Spaw) {
+            vetor[coluna][linha] = 0;
+        }else{
+            if (vetor[coluna][linha] < anterior) {
+                vetor[coluna][linha] = anterior;
+            }
+        }
+        this.dist(vetor,coluna+1,linha,anterior+1);
+        this.dist(vetor,coluna,linha+1,anterior+1);
+    }else{
+        return;
     }
 };

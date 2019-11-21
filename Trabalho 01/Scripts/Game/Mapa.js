@@ -143,44 +143,61 @@ function Precriado() {
     //Ligar os mapas
     var TMapa = new Mapa(44,17);
     var Chest = new Mapa(44,17);
-    var CorredorN = new Mapa(44,17);
-    for (let index = 0; index < CorredorN.coluna; index++) {
-        CorredorN.setMapa(index,CorredorN.linha-1);
-        CorredorN.setMapa(index,CorredorN.linha-2);
-        CorredorN.setMapa(index,CorredorN.linha-3);
-        CorredorN.setMapa(index,CorredorN.linha-4);
-        CorredorN.setMapa(index,CorredorN.linha-5);
-        CorredorN.setMapa(index,CorredorN.linha-6);
-        CorredorN.setMapa(index,CorredorN.linha-7);
-        CorredorN.setMapa(index,CorredorN.linha-8);
-        CorredorN.setMapa(index,CorredorN.linha-9);
-        CorredorN.setMapa(index,CorredorN.linha-10);
-
-        CorredorN.setMapa(index,10);
-        CorredorN.setMapa(index,9);
-        CorredorN.setMapa(index,8);
-        CorredorN.setMapa(index,7);
-        CorredorN.setMapa(index,6);
-        CorredorN.setMapa(index,5);
-        CorredorN.setMapa(index,4);
-        CorredorN.setMapa(index,2);
-        CorredorN.setMapa(index,3);
-        CorredorN.setMapa(index,1);
-    }
     var Spaw = new Mapa(44,17);
     Spaw.setMapa(10,Spaw.linha-2);
     Spaw.setMapa(7,Spaw.linha-2);
-
+    
     Spaw.setPortas(9,Spaw.linha-2);
     Spaw.setPortas(8,Spaw.linha-2);
 
-    var Fim = new Mapa(44,17);
-    Fim.setMapa(10,1);
-    Fim.setMapa(7,1);
+    var FimBranco = new Mapa(44,17);
+    
+    var FimE = new Mapa(44,17);
+    FimE.setMapa(10,1);
+    FimE.setMapa(7,1);
+    
+    FimE.setPortas(9,1);
+    FimE.setPortas(8,1);
 
-    Fim.setPortas(9,1);
-    Fim.setPortas(8,1);
+    var CorredorNS = new Mapa(44,17);
+    for (let index = 0; index < CorredorNS.coluna; index++) {
+        CorredorNS.setMapa(index,CorredorNS.linha-1);
+        CorredorNS.setMapa(index,CorredorNS.linha-2);
+        CorredorNS.setMapa(index,CorredorNS.linha-3);
+        CorredorNS.setMapa(index,CorredorNS.linha-4);
+        CorredorNS.setMapa(index,CorredorNS.linha-5);
+        CorredorNS.setMapa(index,CorredorNS.linha-6);
+        CorredorNS.setMapa(index,CorredorNS.linha-7);
+        CorredorNS.setMapa(index,CorredorNS.linha-8);
+        CorredorNS.setMapa(index,CorredorNS.linha-9);
+        CorredorNS.setMapa(index,CorredorNS.linha-10);
 
-    var lista = {TMapa: TMapa, Chest: Chest, CorredorN: CorredorN, Spaw: Spaw, Fim: Fim};
+        CorredorNS.setMapa(index,10);
+        CorredorNS.setMapa(index,9);
+        CorredorNS.setMapa(index,8);
+        CorredorNS.setMapa(index,7);
+        CorredorNS.setMapa(index,6);
+        CorredorNS.setMapa(index,5);
+        CorredorNS.setMapa(index,4);
+        CorredorNS.setMapa(index,2);
+        CorredorNS.setMapa(index,3);
+        CorredorNS.setMapa(index,1);
+    }
+
+    var CoredorOL = new Mapa(44,17);
+    
+    CoredorOL.setMapa(10,CoredorOL.linha-2);
+    CoredorOL.setMapa(7,CoredorOL.linha-2);
+    
+    CoredorOL.setPortas(9,CoredorOL.linha-2);
+    CoredorOL.setPortas(8,CoredorOL.linha-2);
+    
+    CoredorOL.setMapa(10,1);
+    CoredorOL.setMapa(7,1);
+    
+    CoredorOL.setPortas(9,1);
+    CoredorOL.setPortas(8,1);
+    var lista = {TMapa: TMapa, Chest: Chest, CorredorNS: CorredorNS,
+        Spaw: Spaw, FimE: FimE, CoredorOL: CoredorOL, FimBranco: FimBranco};
     return lista;
 }
