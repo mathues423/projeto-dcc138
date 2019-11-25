@@ -74,7 +74,6 @@ Fase.prototype.draw = function (ctx, dt) {
     if (this.animation < 0) {
         this.animation = 5;
     }
-    
 };
 
 /** Função que verifica se o jogador limpou e chegou no ponto para passar de fase
@@ -130,7 +129,7 @@ Fase.prototype.drawMap = function(){
  * @param {Number} maxW -> Define o numero de #colunas.
  * @throws Se a fase já foi criada.
  */
-Fase.prototype.criaFase = function(maxH,maxW){
+Fase.prototype.criaFase = function(maxH,maxW, Mapas){
     if (!this.criada) {
         // this.criada = true;
         this.vetMap = [];
@@ -140,26 +139,37 @@ Fase.prototype.criaFase = function(maxH,maxW){
             this.vetMap[coluna] = [];
             for (let linha = 0; linha < maxH; linha++) {
                 this.vetMap[coluna][linha] = undefined;
-                // if (coluna == 0 && linha == 0) { // Deixar espaw aleatorio?
-                //     this.vetMap[coluna][linha] = P.Spaw;   
-                // }
             }
         }
         let coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
-        let linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
+        let linha = Math.floor(Math.random()*(this.linhaFase-this.linhaFase/2))+Math.floor(this.linhaFase/2);
         this.vetMap[coluna][linha] = P.FimBranco;
-
+        
         coluna = Math.floor(Math.random()*(this.colunaFase-1));
         this.vetMap[coluna][0] = P.Spaw;
+        
+        // for (let i = 0; i < Mapas.length;) {  // Caso queira adicionar mais objetivos na Fase
+        //     coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
+        //     linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
+        //     if(this.vetMap[coluna][linha] == undefined){
+        //         this.vetMap[coluna][linha] = Mapas[i];
+        //         i++;
+        //     }
+        // }
 
         console.log(`Criada com colunas ${maxH} | linhas ${maxW}`);
-        this.costrutivo();
+        this.restricao(Mapas);
     }else{
         throw new Error(`A fase já foi criada com os parametros (colunas ${maxH} | linhas ${maxW}) não é possivel sobrescrever-la.`);
     }
 };
 
-Fase.prototype.costrutivo = function (){
+/** Função que é responsavel por achar a menor distancia entre dois pontos e fazer uma matriz com essas distancias.
+ * 
+ * @param {Number} inicio O ponto inicial.
+ * @param {Number} fim O ponto que será ligado ate o ponto inicio.
+ */
+Fase.prototype.distanciaEntrePontos = function (inicio, fim){
     let colSpaw,linSpaw;
     let colFim,linFim;
     for (let coluna = 0; coluna < this.colunaFase; coluna++) {
@@ -172,9 +182,6 @@ Fase.prototype.costrutivo = function (){
             }
         }
     }
-    console.log(`Spaw : Coluna ${colSpaw} | Linha ${linSpaw}`);
-    console.log(`VETOR DO MAPA ANTES DO TRATAMENTO DE GERAÇÂO:`);
-    console.log(this.vetMap);
     this.vetDist = [];
     for ( coluna = 0; coluna < this.colunaFase; coluna++) {
         this.vetDist[coluna] = [];
@@ -182,7 +189,9 @@ Fase.prototype.costrutivo = function (){
             this.vetDist[coluna][linha] = Infinity;
         }
     }
+
     this.distAux(colSpaw,linSpaw);
+
     for (coluna = 0; coluna < this.colunaFase; coluna++) {
         for (linha = 0; linha < this.linhaFase; linha++) {
             if (this.vetMap[coluna][linha] == P.FimBranco) {
@@ -193,19 +202,53 @@ Fase.prototype.costrutivo = function (){
             }
         }
     }
+    
+    console.log(`Inicio : Coluna ${colSpaw} | Linha ${linSpaw}`);
     console.log(`Fim : Coluna ${colFim} | Linha ${linFim}`);
     // console.log(this.vetDist);
-    console.log(`VETOR DO MAPA DEPOIS DO TRATAMENTO DE GERAÇÂO:`);
-    console.log(this.vetMap);
+    
+    let sair = marcX = marcY = false; // Melhorar
+    while (!(marcX && marcY)) {
+        if (colFim != colSpaw) {
+            if (colFim > colSpaw) {
+                colFim--;
+            }else{
+                colFim++;
+            }
+            if (this.vetMap[colFim][linFim] != P.Spaw) {
+                this.vetMap[colFim][linFim] = P.MapaBranco;
+            }
+        }else{
+            marcX = true;
+        }
+        if (linFim != linSpaw) {
+            if (linFim > linSpaw) {
+                linFim--;
+            }else{
+                linFim++;
+            }
+            if (this.vetMap[colFim][linFim] != P.Spaw) {
+                this.vetMap[colFim][linFim] = P.MapaBranco;
+            }
+        }else{
+            marcY = true;
+        }
+    }
 };
 
+/** Controla o preenchimento da matriz.
+ * 
+ */
 Fase.prototype.distAux = function (col,lin) {
     this.dist(col,lin,0, +1,+1);
-    this.dist(col,lin,0, -1,+1);
     this.dist(col,lin,0, +1,-1);
+    this.dist(col,lin,0, -1,+1);
     this.dist(col,lin,0, -1,-1);
 };
 
+/** Preenche a matriz.
+ * 
+ */
 Fase.prototype.dist = function (col,lin,anterior,numC,numL) {
     if (col < 0 || col >= this.colunaFase || lin < 0 || lin >= this.linhaFase) {
         return;
@@ -216,4 +259,100 @@ Fase.prototype.dist = function (col,lin,anterior,numC,numL) {
     this.vetDist[col][lin] = anterior; 
     this.dist(col+numC, lin, anterior+1, numC, numL);
     this.dist(col, lin+numL, anterior+1, numC, numL);
+};
+
+/** Exibe o mapa em vetor com o nome.
+ * 
+ */
+Fase.prototype.PrintMap = function(){
+    let a = `\r\n\r\n`;
+    a = `(Coluna,Linha) \r\n`
+    for (let coluna = 0; coluna < this.colunaFase; coluna++) {
+        for (let linha = 0; linha < this.linhaFase; linha++) {
+            if (this.vetMap[coluna][linha]) {
+                a += `[${this.vetMap[coluna][linha].nome}(${coluna},${linha})]`;
+            }else{
+                a += `[Undef(${coluna},${linha})]`;
+            }
+        }
+        a += `\r\n`;
+    }
+    console.log(a);
+};
+
+/** Função que verifica se o mapa tem como concluir. Ex: Possue Fim, se tiver "porta trancada" se tem a sala que possue a chave.
+ * 
+ */
+Fase.prototype.restricao = function (Mapas){
+    console.log(`VETOR DO MAPA ANTES DO TRATAMENTO DE GERAÇÂO:`);
+    this.PrintMap();
+    
+    /// RESTRIÇÔES QUE IMPEDEM A CRIAÇÂO DA FASE (Ex: Sem inicio e fim, sala trancada sem sala com a chave).
+    this.distanciaEntrePontos();
+
+
+    this.converter();
+    console.log(`VETOR DO MAPA DEPOIS DO TRATAMENTO DE GERAÇÂO:`);
+    this.PrintMap();
+};
+
+/** Função que verifica e troca os mapas para eles terem passagem adiciona posições aleatórias e as liga para maior variação de caminhos.
+ * 
+ */
+Fase.prototype.converter = function(){
+    let cima, baixo, esquerda, direita;
+    for (let col = 0; col < this.colunaFase; col++) {
+        for (let lin = 0; lin < this.linhaFase; lin++) {
+            cima = baixo = esquerda = direita = false;
+            if (this.vetMap[col][lin]) {
+                if (col+1 != this.colunaFase && this.vetMap[col+1][lin]){ // baixo
+                    baixo = true;
+                    // console.log(this.vetMap[col+1][lin].nome + " | Col: " + (col+1) + " | Lin: " + lin + " Anterior: " + " | Col: " + col + " | Lin: " + lin)
+                }
+                if (lin+1 != this.colunaFase && this.vetMap[col][lin+1]){ // direita
+                    direita = true;
+                    // console.log(this.vetMap[col][lin+1].nome  + " | Col: " + col + " | Lin: " + (lin+1) + " Anterior: " + " | Col: " + col + " | Lin: " + lin)
+                }
+                if (col-1 >= 0 && this.vetMap[col-1][lin]){ // cima
+                    cima = true;
+                    // console.log(this.vetMap[col-1][lin].nome   + " | Col: " + (col-1) + " | Lin: " + lin + " Anterior: " + " | Col: " + col + " | Lin: " + lin)
+                }
+                if (lin-1 >= 0 && this.colunaFase && this.vetMap[col][lin-1]){ // esquerda
+                    esquerda = true;
+                    // console.log(this.vetMap[col][lin-1].nome   + " | Col: " + col + " | Lin: " + (lin-1) + " Anterior: " + " | Col: " + col + " | Lin: " + lin)
+                }
+            }
+            if(!baixo && !direita && !cima && esquerda){ // ########## CELULAS COM APENAS UMA ABERTURA
+
+            }else if(!baixo && !direita && cima && !esquerda){
+
+            }else if(!baixo && direita && !cima && !esquerda){
+
+            }else if(baixo && !direita && !cima && !esquerda){ // ####### CELULAS COM DUAS ABERTURA
+
+            }else if(!baixo && !direita && cima && esquerda){
+                
+            }else if(!baixo && direita && !cima && esquerda){
+                this.vetMap[col][lin] = P.CoredorOL;
+            }else if(baixo && !direita && !cima && esquerda){
+
+            }else if(!baixo && direita && cima && !esquerda){
+                
+            }else if(baixo && !direita && cima && !esquerda){
+                this.vetMap[col][lin] = P.CoredorNS;
+            }else if(baixo && direita && !cima && !esquerda){ // ####### CELULAS COM TRES ABERTURA
+
+            }else if(!baixo && direita && cima && esquerda){
+                
+            }else if(baixo && !direita && cima && esquerda){
+
+            }else if(baixo && direita && !cima && esquerda){
+
+            }else if(baixo && direita && cima && !esquerda){ // ####### CELULAS COM QUATRO ABERTURA
+                
+            }else if(baixo && direita && cima && esquerda){  
+
+            } // #######
+        }
+    }
 };
