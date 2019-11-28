@@ -153,7 +153,6 @@ function Precriado() {
     var SpawBranco = new Mapa(44,17,"SpBra");
     var Chest = new Mapa(44,17,"Chest");
     
-
     // ############ MAPAS COM UMA ABERTURA ############
     var FimE = new Mapa(44,17,"FimEs");
     FimE.setMapa(10,1);
@@ -179,7 +178,7 @@ function Precriado() {
     FimB.setPortas(FimB.coluna-2,21);
     FimB.setPortas(FimB.coluna-2,22);
     //############ $$ ############
-
+    // ############ MAPAS COM DUAS ABERTURAS ############
     var CorredorNS = new Mapa(44,17,"CorNS");
     for (let index = 0; index < CorredorNS.coluna; index++) {
         if (index > 6 && index < 9) {
@@ -194,29 +193,72 @@ function Precriado() {
     CorredorNS.setMapa(6,1);
     CorredorNS.setMapa(9,1);
 
-    CorredorNS.setMapa(1,23);
+    CorredorNS.setMapa(1,23);// NORTE
     CorredorNS.setMapa(1,20);
     CorredorNS.setPortas(1,22);
     CorredorNS.setPortas(1,21);
-    CorredorNS.setMapa(CorredorNS.coluna-2,23);
+    CorredorNS.setMapa(CorredorNS.coluna-2,23);// SUL
     CorredorNS.setMapa(CorredorNS.coluna-2,20);
     CorredorNS.setPortas(CorredorNS.coluna-2,22);
     CorredorNS.setPortas(CorredorNS.coluna-2,21);
+    
+    var CorredorNO = new Mapa(44,17,"CorNO");
+    CorredorNO.setMapa(1,23);// NORTE
+    CorredorNO.setMapa(1,20);
+    CorredorNO.setPortas(1,22);
+    CorredorNO.setPortas(1,21);
+    CorredorNO.setMapa(10,1);//ESQUERDA
+    CorredorNO.setMapa(7,1);
+    CorredorNO.setPortas(9,1);
+    CorredorNO.setPortas(8,1);
 
-    var CoredorOL = new Mapa(44,17,"CorOL");
-    CoredorOL.setMapa(10,CoredorOL.linha-2);
-    CoredorOL.setMapa(7,CoredorOL.linha-2);
-    CoredorOL.setPortas(9,CoredorOL.linha-2);
-    CoredorOL.setPortas(8,CoredorOL.linha-2);
-    CoredorOL.setMapa(10,1);
-    CoredorOL.setMapa(7,1);
-    CoredorOL.setPortas(9,1);
-    CoredorOL.setPortas(8,1);
+    var CorredorNL = new Mapa(44,17,"CorNL");
+    CorredorNL.setMapa(1,23);// NORTE
+    CorredorNL.setMapa(1,20);
+    CorredorNL.setPortas(1,22);
+    CorredorNL.setPortas(1,21);
+    CorredorNL.setMapa(10,CorredorNL.linha-2);//DIREITA
+    CorredorNL.setMapa(7,CorredorNL.linha-2);
+    CorredorNL.setPortas(9,CorredorNL.linha-2);
+    CorredorNL.setPortas(8,CorredorNL.linha-2);
+
+    var CorredorOL = new Mapa(44,17,"CorOL");
+    CorredorOL.setMapa(10,CorredorOL.linha-2);//DIREITA
+    CorredorOL.setMapa(7,CorredorOL.linha-2);
+    CorredorOL.setPortas(9,CorredorOL.linha-2);
+    CorredorOL.setPortas(8,CorredorOL.linha-2);
+    CorredorOL.setMapa(10,1);//ESQUERDA
+    CorredorOL.setMapa(7,1);
+    CorredorOL.setPortas(9,1);
+    CorredorOL.setPortas(8,1);
     
+    var CorredorSL = new Mapa(44,17,"CorSL");
+    CorredorSL.setMapa(CorredorSL.coluna-2,23);// SUL
+    CorredorSL.setMapa(CorredorSL.coluna-2,20);
+    CorredorSL.setPortas(CorredorSL.coluna-2,22);
+    CorredorSL.setPortas(CorredorSL.coluna-2,21);
+    CorredorSL.setMapa(10,CorredorSL.linha-2);//DIREITA
+    CorredorSL.setMapa(7,CorredorSL.linha-2);
+    CorredorSL.setPortas(9,CorredorSL.linha-2);
+    CorredorSL.setPortas(8,CorredorSL.linha-2);
+
+    var CorredorSO = new Mapa(44,17,"CorSO");
+    CorredorSO.setMapa(CorredorSO.coluna-2,23);// SUL
+    CorredorSO.setMapa(CorredorSO.coluna-2,20);
+    CorredorSO.setPortas(CorredorSO.coluna-2,22);
+    CorredorSO.setPortas(CorredorSO.coluna-2,21);
+    CorredorSO.setMapa(10,1);//ESQUERDA
+    CorredorSO.setMapa(7,1);
+    CorredorSO.setPortas(9,1);
+    CorredorSO.setPortas(8,1);
+    //############ $$ ############
+    // ############ MAPAS COM TRES ABERTURAS ############
     
-    
+    //############ $$ ############
     var lista = {MapaBranco: MapaBranco, FimBranco: FimBranco, Chest: Chest, SpawBranco: SpawBranco,
-        FimE: FimE,FimD: FimD,FimC: FimC,FimB: FimB,
-        CorredorNS: CorredorNS, CoredorOL: CoredorOL};
+    FimE: FimE,FimD: FimD,FimC: FimC,FimB: FimB,// 1 abertura
+    CorredorNS: CorredorNS,CorredorNO: CorredorNO, CorredorNL: CorredorNL, CorredorOL: CorredorOL, CorredorSL: CorredorSL, CorredorSO: CorredorSO,// 2 aberturas
+    
+};
     return lista;
 }

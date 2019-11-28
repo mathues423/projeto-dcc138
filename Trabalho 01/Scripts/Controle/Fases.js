@@ -27,7 +27,7 @@ Fase.prototype.constructor = Fase;
  */
 Fase.prototype.print = function (ctx, dt) {
     if (!this.criada) {
-        this.criaFase(this.Objetivos);
+        this.criaFase(this.Objetivos,);
     }
     this.drawMap();
     if (!this.spaw) { // Spaw
@@ -122,8 +122,8 @@ Fase.prototype.morto = function(index){
 
 Fase.prototype.drawMap = function(){
     var context = document.querySelector("canvas").getContext("2d");
-    if (this.map) {
-        this.map.drawMapa(context, this.Principal);
+    if (this.vetMap) {
+        this.vetMap[this.yAtual][this.xAtual].drawMapa(context, this.Principal);
     }else{
         throw new Error("Não adicionado map");
     }
@@ -149,10 +149,12 @@ Fase.prototype.criaFase = function(Mapas){
         let coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
         let linha = Math.floor(Math.random()*(this.linhaFase-this.linhaFase/2))+Math.floor(this.linhaFase/2);
         this.vetMap[coluna][linha] = P.FimBranco;
-        
+        this.xF = linha;
+        this.yF = coluna;
         coluna = Math.floor(Math.random()*(this.colunaFase-1));
         this.vetMap[coluna][0] = P.SpawBranco;
-        
+        this.xAtual = this.xI = 0;
+        this.yAtual = this.yI = coluna;
         for (let i = 0; (Mapas != undefined && Mapas != null) &&  i < Mapas.length;) {  // Caso queira adicionar mais objetivos na Fase
             coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
             linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
@@ -336,17 +338,17 @@ Fase.prototype.converter = function(){
             }else if(baixo && !direita && !cima && !esquerda){ 
                 this.vetMap[col][lin] = P.FimB;
             }else if(!baixo && !direita && cima && esquerda){ // ####### CELULAS COM DUAS ABERTURA
-                
+                this.vetMap[col][lin] = P.CorredorNO;
             }else if(!baixo && direita && !cima && esquerda){
-                this.vetMap[col][lin] = P.CoredorOL;
+                this.vetMap[col][lin] = P.CorredorOL;
             }else if(baixo && !direita && !cima && esquerda){
-
+                this.vetMap[col][lin] = P.CorredorSO;
             }else if(!baixo && direita && cima && !esquerda){
-                
+                this.vetMap[col][lin] = P.CorredorNL;
             }else if(baixo && !direita && cima && !esquerda){
-                this.vetMap[col][lin] = P.CoredorNS;
+                this.vetMap[col][lin] = P.CorredorNS;
             }else if(baixo && direita && !cima && !esquerda){
-
+                this.vetMap[col][lin] = P.CorredorSL;
             }else if(!baixo && direita && cima && esquerda){  // ####### CELULAS COM TRES ABERTURA
                 
             }else if(baixo && !direita && cima && esquerda){
