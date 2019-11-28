@@ -26,7 +26,7 @@ function frames(t) {
         cancelAnimationFrame(1);
         return;
     }
-    // context.fillText((1/dt).toFixed(4), 100,100);
+    context.fillText((1/dt).toFixed(4), 100,100);
     anterior = t;
     requestAnimationFrame(frames);
 }

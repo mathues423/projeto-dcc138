@@ -1,4 +1,4 @@
-function Fase(params = {},col,linha) {
+function Fase(params = {},col,lin, Objetivos) {
     // var can = document.querySelector("canvas");
     fase = {
         Principal: undefined,
@@ -11,6 +11,9 @@ function Fase(params = {},col,linha) {
         map: undefined,
         vetMap: undefined,
         vetDist: undefined,
+        colunaFase: col,
+        linhaFase: lin,
+        Objetivos: Objetivos,
     };
     Object.assign(this, fase, params);
 }
@@ -23,6 +26,9 @@ Fase.prototype.constructor = Fase;
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Fase.prototype.print = function (ctx, dt) {
+    if (!this.criada) {
+        this.criaFase(this.Objetivos);
+    }
     this.drawMap();
     if (!this.spaw) { // Spaw
         this.map.SpawPrincipal(this.Principal,8,1);
@@ -125,19 +131,18 @@ Fase.prototype.drawMap = function(){
 
 /** Função que é responsavel por criar a fese e so é chamada uma vez.
  * 
- * @param {Number} maxH -> Define o numero de #linhas.
- * @param {Number} maxW -> Define o numero de #colunas.
+ * @param {Mapa} Mapas -> Quais objetivos gostaria de adicionar na fase.
  * @throws Se a fase já foi criada.
  */
-Fase.prototype.criaFase = function(maxH,maxW, Mapas){
+Fase.prototype.criaFase = function(Mapas){
     if (!this.criada) {
-        // this.criada = true;
+        this.criada = true;
         this.vetMap = [];
-        this.linhaFase = maxH;
-        this.colunaFase = maxW;
-        for (let coluna = 0; coluna < maxW; coluna++) {
+        // this.linhaFase = maxH;
+        // this.colunaFase = maxW;
+        for (let coluna = 0; coluna < this.colunaFase; coluna++) {
             this.vetMap[coluna] = [];
-            for (let linha = 0; linha < maxH; linha++) {
+            for (let linha = 0; linha < this.linhaFase; linha++) {
                 this.vetMap[coluna][linha] = undefined;
             }
         }
@@ -146,21 +151,21 @@ Fase.prototype.criaFase = function(maxH,maxW, Mapas){
         this.vetMap[coluna][linha] = P.FimBranco;
         
         coluna = Math.floor(Math.random()*(this.colunaFase-1));
-        this.vetMap[coluna][0] = P.Spaw;
+        this.vetMap[coluna][0] = P.SpawBranco;
         
-        // for (let i = 0; i < Mapas.length;) {  // Caso queira adicionar mais objetivos na Fase
-        //     coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
-        //     linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
-        //     if(this.vetMap[coluna][linha] == undefined){
-        //         this.vetMap[coluna][linha] = Mapas[i];
-        //         i++;
-        //     }
-        // }
+        for (let i = 0; (Mapas != undefined && Mapas != null) &&  i < Mapas.length;) {  // Caso queira adicionar mais objetivos na Fase
+            coluna = Math.floor(Math.random()*(this.colunaFase-1))+1;
+            linha = Math.floor(Math.random()*(this.linhaFase-1))+1;
+            if(this.vetMap[coluna][linha] == undefined){
+                this.vetMap[coluna][linha] = Mapas[i];
+                i++;
+            }
+        }
 
-        console.log(`Criada com colunas ${maxH} | linhas ${maxW}`);
+        console.log(`Criada com colunas ${this.colunaFase} | linhas ${this.linhaFase}`);
         this.restricao(Mapas);
     }else{
-        throw new Error(`A fase já foi criada com os parametros (colunas ${maxH} | linhas ${maxW}) não é possivel sobrescrever-la.`);
+        throw new Error(`\r\nA fase já foi criada com os parametros (colunas ${this.colunaFase} | linhas ${this.linhaFase}) não é possivel sobrescrever-la.`);
     }
 };
 
@@ -174,7 +179,7 @@ Fase.prototype.distanciaEntrePontos = function (inicio, fim){
     let colFim,linFim;
     for (let coluna = 0; coluna < this.colunaFase; coluna++) {
         for (let linha = 0; linha < this.linhaFase; linha++) {
-            if (this.vetMap[coluna][linha] == P.Spaw) {
+            if (this.vetMap[coluna][linha] == P.SpawBranco) {
                 colSpaw = coluna;
                 linSpaw = linha;
                 coluna = this.colunaFase;
@@ -215,7 +220,7 @@ Fase.prototype.distanciaEntrePontos = function (inicio, fim){
             }else{
                 colFim++;
             }
-            if (this.vetMap[colFim][linFim] != P.Spaw) {
+            if (this.vetMap[colFim][linFim] != P.SpawBranco) {
                 this.vetMap[colFim][linFim] = P.MapaBranco;
             }
         }else{
@@ -227,7 +232,7 @@ Fase.prototype.distanciaEntrePontos = function (inicio, fim){
             }else{
                 linFim++;
             }
-            if (this.vetMap[colFim][linFim] != P.Spaw) {
+            if (this.vetMap[colFim][linFim] != P.SpawBranco) {
                 this.vetMap[colFim][linFim] = P.MapaBranco;
             }
         }else{
@@ -323,14 +328,14 @@ Fase.prototype.converter = function(){
                 }
             }
             if(!baixo && !direita && !cima && esquerda){ // ########## CELULAS COM APENAS UMA ABERTURA
-
+                this.vetMap[col][lin] = P.FimE;
             }else if(!baixo && !direita && cima && !esquerda){
-
+                this.vetMap[col][lin] = P.FimC;
             }else if(!baixo && direita && !cima && !esquerda){
-
-            }else if(baixo && !direita && !cima && !esquerda){ // ####### CELULAS COM DUAS ABERTURA
-
-            }else if(!baixo && !direita && cima && esquerda){
+                this.vetMap[col][lin] = P.FimD;
+            }else if(baixo && !direita && !cima && !esquerda){ 
+                this.vetMap[col][lin] = P.FimB;
+            }else if(!baixo && !direita && cima && esquerda){ // ####### CELULAS COM DUAS ABERTURA
                 
             }else if(!baixo && direita && !cima && esquerda){
                 this.vetMap[col][lin] = P.CoredorOL;
@@ -340,17 +345,17 @@ Fase.prototype.converter = function(){
                 
             }else if(baixo && !direita && cima && !esquerda){
                 this.vetMap[col][lin] = P.CoredorNS;
-            }else if(baixo && direita && !cima && !esquerda){ // ####### CELULAS COM TRES ABERTURA
+            }else if(baixo && direita && !cima && !esquerda){
 
-            }else if(!baixo && direita && cima && esquerda){
+            }else if(!baixo && direita && cima && esquerda){  // ####### CELULAS COM TRES ABERTURA
                 
             }else if(baixo && !direita && cima && esquerda){
 
             }else if(baixo && direita && !cima && esquerda){
 
-            }else if(baixo && direita && cima && !esquerda){ // ####### CELULAS COM QUATRO ABERTURA
+            }else if(baixo && direita && cima && !esquerda){ 
                 
-            }else if(baixo && direita && cima && esquerda){  
+            }else if(baixo && direita && cima && esquerda){  // ####### CELULAS COM QUATRO ABERTURA
 
             } // #######
         }

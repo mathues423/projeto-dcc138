@@ -150,50 +150,39 @@ function Precriado() {
     //Ligar os mapas
     var MapaBranco = new Mapa(44,17,"MapaB");
     var FimBranco = new Mapa(44,17,"FimBr");
-
+    var SpawBranco = new Mapa(44,17,"SpBra");
     var Chest = new Mapa(44,17,"Chest");
-    var Spaw = new Mapa(44,17,"Spaww");
-    Spaw.setMapa(10,Spaw.linha-2);
-    Spaw.setMapa(7,Spaw.linha-2);
     
-    Spaw.setPortas(9,Spaw.linha-2);
-    Spaw.setPortas(8,Spaw.linha-2);
 
-    
+    // ############ MAPAS COM UMA ABERTURA ############
     var FimE = new Mapa(44,17,"FimEs");
     FimE.setMapa(10,1);
     FimE.setMapa(7,1);
-    
     FimE.setPortas(9,1);
     FimE.setPortas(8,1);
 
+    var FimD = new Mapa(44,17,"FimDi");
+    FimD.setMapa(10,FimD.linha-2);
+    FimD.setMapa(7,FimD.linha-2);
+    FimD.setPortas(9,FimD.linha-2);
+    FimD.setPortas(8,FimD.linha-2);
+
+    var FimC = new Mapa(44,17,"FimCi");
+    FimC.setMapa(1,20);
+    FimC.setMapa(1,23);
+    FimC.setPortas(1,21);
+    FimC.setPortas(1,22);
+
+    var FimB = new Mapa(44,17,"FimBa");
+    FimB.setMapa(FimB.coluna-2,20);
+    FimB.setMapa(FimB.coluna-2,23);
+    FimB.setPortas(FimB.coluna-2,21);
+    FimB.setPortas(FimB.coluna-2,22);
+    //############ $$ ############
+
     var CorredorNS = new Mapa(44,17,"CorNS");
     for (let index = 0; index < CorredorNS.coluna; index++) {
-        // CorredorNS.setMapa(index,CorredorNS.linha-3);
-        // CorredorNS.setMapa(index,CorredorNS.linha-4);
-        // CorredorNS.setMapa(index,CorredorNS.linha-5);
-        // CorredorNS.setMapa(index,CorredorNS.linha-6);
-        // CorredorNS.setMapa(index,CorredorNS.linha-7);
-        
-        // CorredorNS.setMapa(index,10);
-        // CorredorNS.setMapa(index,6);
-        // CorredorNS.setMapa(index,5);
-        // CorredorNS.setMapa(index,4);
-        // CorredorNS.setMapa(index,3);
         if (index > 6 && index < 9) {
-            // CorredorNS.setMapa(index,9);
-            // CorredorNS.setMapa(index,8);
-            // CorredorNS.setMapa(index,7);
-            // CorredorNS.setMapa(index,15);
-            // CorredorNS.setMapa(index,16);
-            // CorredorNS.setMapa(index,17);
-            // CorredorNS.setMapa(index,CorredorNS.linha-8);
-            // CorredorNS.setMapa(index,CorredorNS.linha-9);
-            // CorredorNS.setMapa(index,CorredorNS.linha-10);
-            // CorredorNS.setMapa(index,CorredorNS.linha-18);
-            // CorredorNS.setMapa(index,CorredorNS.linha-17);
-            // CorredorNS.setMapa(index,CorredorNS.linha-16);
-
             CorredorNS.setMapa(index,CorredorNS.linha-2);
             CorredorNS.setMapa(index,CorredorNS.linha-3);
             CorredorNS.setMapa(index,2);
@@ -207,28 +196,27 @@ function Precriado() {
 
     CorredorNS.setMapa(1,23);
     CorredorNS.setMapa(1,20);
-    CorredorNS.setMapa(CorredorNS.coluna-2,23);
-    CorredorNS.setMapa(CorredorNS.coluna-2,20);
-
-    CorredorNS.setPortas(CorredorNS.coluna-2,22);
-    CorredorNS.setPortas(CorredorNS.coluna-2,21);
     CorredorNS.setPortas(1,22);
     CorredorNS.setPortas(1,21);
+    CorredorNS.setMapa(CorredorNS.coluna-2,23);
+    CorredorNS.setMapa(CorredorNS.coluna-2,20);
+    CorredorNS.setPortas(CorredorNS.coluna-2,22);
+    CorredorNS.setPortas(CorredorNS.coluna-2,21);
 
     var CoredorOL = new Mapa(44,17,"CorOL");
-    
     CoredorOL.setMapa(10,CoredorOL.linha-2);
     CoredorOL.setMapa(7,CoredorOL.linha-2);
-    
     CoredorOL.setPortas(9,CoredorOL.linha-2);
     CoredorOL.setPortas(8,CoredorOL.linha-2);
-    
     CoredorOL.setMapa(10,1);
     CoredorOL.setMapa(7,1);
-    
     CoredorOL.setPortas(9,1);
     CoredorOL.setPortas(8,1);
-    var lista = {MapaBranco: MapaBranco, Chest: Chest, CorredorNS: CorredorNS,
-        Spaw: Spaw, FimE: FimE, CoredorOL: CoredorOL, FimBranco: FimBranco};
+    
+    
+    
+    var lista = {MapaBranco: MapaBranco, FimBranco: FimBranco, Chest: Chest, SpawBranco: SpawBranco,
+        FimE: FimE,FimD: FimD,FimC: FimC,FimB: FimB,
+        CorredorNS: CorredorNS, CoredorOL: CoredorOL};
     return lista;
 }
