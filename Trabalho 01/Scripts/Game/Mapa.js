@@ -19,6 +19,8 @@ class Mapa {
         this.Portas = [];
         this.completa = false;
         this.nome = "undefined";
+        this.inimigos = [];
+        this.limpa = false;
         if (nome!=undefined) {
             this.nome = nome;
         }
@@ -84,16 +86,16 @@ class Mapa {
     setPortas(coluna,linha){
         if (this.Mapa[coluna][linha] != undefined) {
             let cont = this.Portas.length;
-            let verificador = {cima: undefined, direita: undefined};
+            let verificador = {cima: undefined, direita: undefined,baixo: undefined, esquerda: undefined};
             if (coluna > 15) {
                 verificador.cima = true;
             } else if(coluna < 2){
-                verificador.cima = false;
+                verificador.baixo = true;
             }
             if (linha > 41) {
                 verificador.direita = true;
             }else if(linha < 2){
-                verificador.direita = false;
+                verificador.esquerda = true;
             }
             this.Portas[cont] = {coluna: coluna, linha: linha, proxSala: verificador};
         }else
@@ -101,6 +103,12 @@ class Mapa {
     
     }
 
+    /**
+     * 
+     * @param {Principal} Principal 
+     * @param {Number} linha  - > Coluna
+     * @param {Number} coluna  - > Linha
+     */
     SpawPrincipal(Principal, linha, coluna){
         // var can = document.querySelector("canvas");
         Principal.marcaX = -1;
@@ -112,14 +120,23 @@ class Mapa {
 
         Principal.x = coluna*this.W;
         Principal.y = linha*this.H;
-    }
+    };
+
+    SpawInimigos(Inimigos,Fase){
+        let numInigos = Math.floor(Math.random()*10);
+        let numIndex = -1;
+        for (let index = 0; index < numInigos; index++) {
+            numIndex = Math.round(Math.random()*(Inimigos.length-1));
+            this.inimigos.push(Fase.busca(numIndex));
+        }
+    };
 
     set(coluna,linha, val){
         if (this.Mapa[coluna][linha] != undefined) {
             this.Mapa[coluna][linha] = val;
         }else
             throw new Error(`Mapa na coluna ${coluna} e na linha ${linha} possui o valor ${this.Mapa[coluna][linha]}.`)
-    }
+    };
 
     itsClear(){
         if(this.personagem.inimigos == null || this.personagem.inimigos == undefined){
@@ -128,7 +145,7 @@ class Mapa {
         }else{
             return false;
         }
-    }
+    };
 
     celulasVazias(){
         var list = [];
@@ -143,7 +160,7 @@ class Mapa {
         }
         this.list = list;
         this.casasVazias = cont;
-    }
+    };
 }
 
 function Precriado() {

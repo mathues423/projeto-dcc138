@@ -8,7 +8,6 @@ function Fase(params = {},col,lin, Objetivos) {
         flagCompleta: false,
         animation: 5,
         spaw: false,
-        map: undefined,
         vetMap: undefined,
         vetDist: undefined,
         colunaFase: col,
@@ -27,22 +26,24 @@ Fase.prototype.constructor = Fase;
  */
 Fase.prototype.print = function (ctx, dt) {
     if (!this.criada) {
-        this.criaFase(this.Objetivos,);
+        this.criaFase(this.Objetivos);
     }
     this.drawMap();
     if (!this.spaw) { // Spaw
-        this.map.SpawPrincipal(this.Principal,8,1);
+        this.vetMap[this.yAtual][this.xAtual].SpawPrincipal(this.Principal,8,1);
         this.Principal.inimigos = this.inimigos;
         this.spaw = true;
     }
     this.verifica(ctx, dt);
-    for (let i = 0; this.limpa!=true && i < this.inimigos.length; i++) {
-        this.inimigos[i].inf(ctx,dt,this.Principal,this.map);
+    
+    this.vetMap[this.yAtual][this.xAtual].drawMapa(context, this.Principal);
+    for (let i = 0; this.vetMap[this.yAtual][this.xAtual].completa!=true && i < this.vetMap[this.yAtual][this.xAtual].inimigos.length; i++) {
+        this.vetMap[this.yAtual][this.xAtual].inimigos[i].inf(ctx,dt,this.Principal,this.vetMap[this.yAtual][this.xAtual]);
         if(this.morto(i)){
             i--;
         }
     }
-    this.Principal.inf(ctx, dt,this.map);
+    this.Principal.inf(ctx, dt,this.vetMap[this.yAtual][this.xAtual]);
     if (this.flagPonto && this.limpa) {
         this.flagCompleta = true;
         this.spaw = false;
@@ -55,16 +56,37 @@ Fase.prototype.print = function (ctx, dt) {
  * @param {Number} dt -> tempo do quadro em ms.
  */
 Fase.prototype.verifica = function (ctx, dt) {
-    if (!this.limpa && this.inimigos == null || this.inimigos == undefined) {
-        this.limpa = true;
-        for (let index = 0; index < this.map.Portas.length; index++) {
-            this.map.Mapa[this.map.Portas[index].coluna][this.map.Portas[index].linha] = 2;
+    if (!this.vetMap[this.yAtual][this.xAtual].completa && (this.vetMap[this.yAtual][this.xAtual].inimigos == null || this.vetMap[this.yAtual][this.xAtual].inimigos == undefined || this.vetMap[this.yAtual][this.xAtual].inimigos == [])) {
+        this.vetMap[this.yAtual][this.xAtual].completa = true;
+        for (let index = 0; index < this.vetMap[this.yAtual][this.xAtual].Portas.length; index++) {
+            this.vetMap[this.yAtual][this.xAtual].Mapa[this.vetMap[this.yAtual][this.xAtual].Portas[index].coluna][this.vetMap[this.yAtual][this.xAtual].Portas[index].linha] = 2;
         }
     }
-    if (this.limpa) {
-        for (let index = 0; index < this.map.Portas.length; index++) {
-            if (this.Principal.posiL == this.map.Portas[index].linha && this.Principal.posiC == this.map.Portas[index].coluna) {
-                this.flagPonto = true;
+    if (this.vetMap[this.yAtual][this.xAtual].completa) {
+        for (let index = 0; index < this.vetMap[this.yAtual][this.xAtual].Portas.length; index++) {
+            if (this.Principal.posiL == this.vetMap[this.yAtual][this.xAtual].Portas[index].linha && this.Principal.posiC == this.vetMap[this.yAtual][this.xAtual].Portas[index].coluna) {
+                this.Principal.spaw = false;
+                console.log(`Porta : ${this.vetMap[this.yAtual][this.xAtual].Portas[index]} |#| `);
+                if(this.vetMap[this.yAtual][this.xAtual].Portas[index].proxSala.direita != undefined){
+                    this.vetMap[this.yAtual][this.xAtual].SpawPrincipal(this.Principal, this.vetMap[this.yAtual][this.xAtual].Portas[index].coluna, 2);
+                    this.xAtual++;
+                    return;
+                }
+                if(this.vetMap[this.yAtual][this.xAtual].Portas[index].proxSala.esquerda != undefined){
+                    this.vetMap[this.yAtual][this.xAtual].SpawPrincipal(this.Principal,this.vetMap[this.yAtual][this.xAtual].Portas[index].coluna, this.vetMap[this.yAtual][this.xAtual].linha-3);
+                    this.xAtual--;
+                    return;
+                }
+                if(this.vetMap[this.yAtual][this.xAtual].Portas[index].proxSala.cima != undefined ){
+                    this.vetMap[this.yAtual][this.xAtual].SpawPrincipal(this.Principal,2, this.vetMap[this.yAtual][this.xAtual].Portas[index].linha);
+                    this.yAtual++;
+                    return;
+                }
+                if(this.vetMap[this.yAtual][this.xAtual].Portas[index].proxSala.baixo != undefined){
+                    this.vetMap[this.yAtual][this.xAtual].SpawPrincipal(this.Principal,this.vetMap[this.yAtual][this.xAtual].coluna-3, this.vetMap[this.yAtual][this.xAtual].Portas[index].linha);
+                    this.yAtual--;
+                    return;
+                }
             }
         }
     }
@@ -86,20 +108,35 @@ Fase.prototype.draw = function (ctx, dt) {
  * 
  * @param {Number} id -> Id dos mostros a serem inceridos.
  * 0 -> Green Slime; 
- * 
- * @param {Number} quantidade -> tempo do quadro em ms.
+ * ? -> Defaut;
  */
-Fase.prototype.insere = function(id,quantidade){
-    for (let i = 0; i < quantidade; i++) {
-        switch (id) {
-            case 0:
-                var I0 = new Inimigo({nome: "Green Slime", sprite: assest.getImg("Green_Slime").src,});
-                this.inimigos.push(I0);
-                break;
+Fase.prototype.insere = function(id){
+    switch (id) {
+    case 0:
+        var I0 = new Inimigo({nome: "Green Slime", sprite: assest.getImg("Green_Slime").src,});
+        this.inimigos.push(I0);
+        break;
         
-            default:
-                break;
-        }
+    default:
+        throw new Erro(`O ID(${id}) passado não está presente no vetor de inimigos.`);
+        break;
+    }
+};
+
+/** Função que verifica se o jogador limpou e chegou no ponto para passar de fase
+ * 
+ * @param {Number} id -> Id dos mostros a serem inceridos.
+ * 0 -> Green Slime; 
+ * ? -> Defaut;
+ */
+Fase.prototype.busca = function(id){
+    switch (id) {
+    case 0:
+        var I0 = new Inimigo({nome: "Green Slime", sprite: assest.getImg("Green_Slime").src,});
+        return I0;
+        
+    default:
+        throw new Erro(`O ID(${id}) passado não está presente no vetor de inimigos.`);
     }
 };
 
@@ -109,8 +146,8 @@ Fase.prototype.insere = function(id,quantidade){
  * @returns True se tiver morto, false caso não.
  */
 Fase.prototype.morto = function(index){
-    if (this.inimigos[index]) {
-        if (!this.inimigos[index].itsLife) {
+    if (this.vetMap[this.yAtual][this.xAtual].inimigos[index]) {
+        if (!this.vetMap[this.yAtual][this.xAtual].inimigos[index].itsLife) {
             this.Principal.xp += this.inimigos[index].xp;
             this.inimigos.splice(index,1);
             this.Principal.index = -1;    
@@ -177,11 +214,11 @@ Fase.prototype.criaFase = function(Mapas){
  * @param {Number} fim O ponto que será ligado ate o ponto inicio.
  */
 Fase.prototype.distanciaEntrePontos = function (inicio, fim){
-    let colSpaw,linSpaw;
-    let colFim,linFim;
+    let colSpaw  = linSpaw = -1;
+    let colFim = linFim = -1;
     for (let coluna = 0; coluna < this.colunaFase; coluna++) {
         for (let linha = 0; linha < this.linhaFase; linha++) {
-            if (this.vetMap[coluna][linha] == P.SpawBranco) {
+            if (this.vetMap[coluna][linha] == inicio) {
                 colSpaw = coluna;
                 linSpaw = linha;
                 coluna = this.colunaFase;
@@ -197,11 +234,14 @@ Fase.prototype.distanciaEntrePontos = function (inicio, fim){
         }
     }
 
+    if (colSpaw == -1 && linSpaw == -1) {
+        throw new Erro(`O parametro passado ${inicio} não está no mapa.`);
+    }
     this.distAux(colSpaw,linSpaw);
 
     for (coluna = 0; coluna < this.colunaFase; coluna++) {
         for (linha = 0; linha < this.linhaFase; linha++) {
-            if (this.vetMap[coluna][linha] == P.FimBranco) {
+            if (this.vetMap[coluna][linha] == fim) {
                 colFim = coluna;
                 linFim = linha;
                 coluna = this.colunaFase;
@@ -210,6 +250,9 @@ Fase.prototype.distanciaEntrePontos = function (inicio, fim){
         }
     }
     
+    if (colFim == -1 && linFim == -1) {
+        throw new Erro(`O parametro passado ${fim} não está no mapa.`);
+    }
     console.log(`Inicio : Coluna ${colSpaw} | Linha ${linSpaw}`);
     console.log(`Fim : Coluna ${colFim} | Linha ${linFim}`);
     // console.log(this.vetDist);
@@ -295,7 +338,12 @@ Fase.prototype.restricao = function (Mapas){
     this.PrintMap();
     
     /// RESTRIÇÔES QUE IMPEDEM A CRIAÇÂO DA FASE (Ex: Sem inicio e fim, sala trancada sem sala com a chave).
-    this.distanciaEntrePontos();
+    this.distanciaEntrePontos(P.SpawBranco, P.FimBranco);
+    // for (let index = 0; index < Mapas.length; index++) {
+    //     if (Mapas[index] == P.Chest) {
+    //         this.distanciaEntrePontos(Mapas[index], P.SpawBranco);
+    //     }
+    // }
 
 
     this.converter();
@@ -328,38 +376,39 @@ Fase.prototype.converter = function(){
                     esquerda = true;
                     // console.log(this.vetMap[col][lin-1].nome   + " | Col: " + col + " | Lin: " + (lin-1) + " Anterior: " + " | Col: " + col + " | Lin: " + lin)
                 }
+                if(!baixo && !direita && !cima && esquerda){ // ########## CELULAS COM APENAS UMA ABERTURA
+                    this.vetMap[col][lin] = P.FimE;
+                }else if(!baixo && !direita && cima && !esquerda){
+                    this.vetMap[col][lin] = P.FimC;
+                }else if(!baixo && direita && !cima && !esquerda){
+                    this.vetMap[col][lin] = P.FimD;
+                }else if(baixo && !direita && !cima && !esquerda){ 
+                    this.vetMap[col][lin] = P.FimB;
+                }else if(!baixo && !direita && cima && esquerda){ // ####### CELULAS COM DUAS ABERTURA
+                    this.vetMap[col][lin] = P.CorredorNO;
+                }else if(!baixo && direita && !cima && esquerda){
+                    this.vetMap[col][lin] = P.CorredorOL;
+                }else if(baixo && !direita && !cima && esquerda){
+                    this.vetMap[col][lin] = P.CorredorSO;
+                }else if(!baixo && direita && cima && !esquerda){
+                    this.vetMap[col][lin] = P.CorredorNL;
+                }else if(baixo && !direita && cima && !esquerda){
+                    this.vetMap[col][lin] = P.CorredorNS;
+                }else if(baixo && direita && !cima && !esquerda){
+                    this.vetMap[col][lin] = P.CorredorSL;
+                }else if(!baixo && direita && cima && esquerda){  // ####### CELULAS COM TRES ABERTURA
+                    
+                }else if(baixo && !direita && cima && esquerda){
+
+                }else if(baixo && direita && !cima && esquerda){
+
+                }else if(baixo && direita && cima && !esquerda){ 
+                    
+                }else if(baixo && direita && cima && esquerda){  // ####### CELULAS COM QUATRO ABERTURA
+
+                } // #######
+                this.vetMap[col][lin].SpawInimigos(this.inimigos,this);
             }
-            if(!baixo && !direita && !cima && esquerda){ // ########## CELULAS COM APENAS UMA ABERTURA
-                this.vetMap[col][lin] = P.FimE;
-            }else if(!baixo && !direita && cima && !esquerda){
-                this.vetMap[col][lin] = P.FimC;
-            }else if(!baixo && direita && !cima && !esquerda){
-                this.vetMap[col][lin] = P.FimD;
-            }else if(baixo && !direita && !cima && !esquerda){ 
-                this.vetMap[col][lin] = P.FimB;
-            }else if(!baixo && !direita && cima && esquerda){ // ####### CELULAS COM DUAS ABERTURA
-                this.vetMap[col][lin] = P.CorredorNO;
-            }else if(!baixo && direita && !cima && esquerda){
-                this.vetMap[col][lin] = P.CorredorOL;
-            }else if(baixo && !direita && !cima && esquerda){
-                this.vetMap[col][lin] = P.CorredorSO;
-            }else if(!baixo && direita && cima && !esquerda){
-                this.vetMap[col][lin] = P.CorredorNL;
-            }else if(baixo && !direita && cima && !esquerda){
-                this.vetMap[col][lin] = P.CorredorNS;
-            }else if(baixo && direita && !cima && !esquerda){
-                this.vetMap[col][lin] = P.CorredorSL;
-            }else if(!baixo && direita && cima && esquerda){  // ####### CELULAS COM TRES ABERTURA
-                
-            }else if(baixo && !direita && cima && esquerda){
-
-            }else if(baixo && direita && !cima && esquerda){
-
-            }else if(baixo && direita && cima && !esquerda){ 
-                
-            }else if(baixo && direita && cima && esquerda){  // ####### CELULAS COM QUATRO ABERTURA
-
-            } // #######
         }
     }
 };
